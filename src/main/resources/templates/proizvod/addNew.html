@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <title>Planinarski klub "Summit Explorers"</title>
+
+    <!-- Bootstrap 4.5 CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+
+    <!--Sumernote CSS for Bootstrap 4 -->
+    <link rel="stylesheet" th:href="@{/summernoteRTE/summernote-bs4.min.css}">
+
+    <!-- reference CSS file -->
+    <link rel="stylesheet" th:href="@{/css/myStyle.css}">
+
+
+
+    <!--load all styles -->
+    <!--Font Awesome ikonice!-->
+    <link th:href="@{/fontAwesome/all.css}" rel="stylesheet">
+
+</head>
+<body>
+
+<!-- Navigation bar fragment -->
+<div th:replace="fragments/navBar :: navBar1"></div>
+<!-- Navigation bar fragment END-->
+
+
+<div class="container">
+    <div class="col-12 mt-3 mb-4">
+        <h1>Dodaj Novi Proizvod</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <form action="#" th:action="@{/admin/proizvod/addNew}" th:object="${noviProizvod}" enctype="multipart/form-data" method="POST">
+                <div class="form-group col-md-7">
+                    <label for="naziv">Naziv Proizvoda:</label>
+                    <input type="text" th:field="*{naziv}" id="naziv" placeholder="Unesite Naziv Proizvoda" required class="form-control" th:errorclass="fieldError">
+                    <ul th:if="${#fields.hasErrors('naziv')}">
+                        <li th:each="err : ${#fields.errors('naziv')}" th:text="${err}" class="errorMsg"></li>
+                    </ul>
+                </div>
+
+                <div class="form-group col-md-7">
+                    <label>Dodaj Thumbnail Fotografiju: </label>
+                    <input type="file" name="slika" accept="image/png, image/jpeg">
+                </div>
+
+                <div class="form-group col-md-9">
+                    <label for="opis">Opis Proizvoda:</label>
+                    <textarea id="opis" th:field="*{opis}" class="form-control" th:errorclass="fieldError"></textarea>
+                    <ul th:if="${#fields.hasErrors('opis')}">
+                        <li th:each="err : ${#fields.errors('opis')}" th:text="${err}" class="errorMsg"></li>
+                    </ul>
+                </div>
+
+                <div class="form-group col-md-9">
+                    <label for="tehnickeInfo">Tehničke Informacije Proizvoda: <span style="font-size: 13px;">*možete ostaviti prazno</span></label>
+                    <textarea id="tehnickeInfo" th:field="*{tehnickeInfo}" class="form-control" th:errorclass="fieldError">
+                    </textarea>
+                    <ul th:if="${#fields.hasErrors('tehnickeInfo')}">
+                        <li th:each="err : ${#fields.errors('tehnickeInfo')}" th:text="${err}" class="errorMsg"></li>
+                    </ul>
+                </div>
+
+                <div class="form-group col-md-5">
+                    <label for="kolicina">Količina:</label>
+                    <input type="number" th:field="*{kolicina}" id="kolicina" placeholder="Unesite količinu" required class="form-control" th:errorclass="fieldError">
+                    <ul th:if="${#fields.hasErrors('kolicina')}">
+                        <li th:each="err : ${#fields.errors('kolicina')}" th:text="${err}" class="errorMsg"></li>
+                    </ul>
+                </div>
+
+                <div class="form-group col-md-5">
+                    <label for="cena">Cena: (u <span class="font-weight-bolder">&#8364;</span>)</label>
+                    <input type="number" th:field="*{cena}" id="cena" placeholder="Cena proizvoda u evrima (&#8364;)" required class="form-control" th:errorclass="fieldError">
+                    <ul th:if="${#fields.hasErrors('cena')}">
+                        <li th:each="err : ${#fields.errors('cena')}" th:text="${err}" class="errorMsg"></li>
+                    </ul>
+                </div>
+
+                <div class="form-group col-md-5">
+                    <label for="popust">Popust:</label>
+                    <input type="number" th:field="*{popust}" id="popust" placeholder="Popust na cenu proizvoda (ostavite 0 ukoliko nema popusta)" class="form-control" th:errorclass="fieldError">
+                    <ul th:if="${#fields.hasErrors('popust')}">
+                        <li th:each="err : ${#fields.errors('popust')}" th:text="${err}" class="errorMsg"></li>
+                    </ul>
+                </div>
+
+                <div class="form-group col-md-7">
+                    <label for="vrstaProizvoda">Vrsta Proizvoda:</label>
+                    <select id="vrstaProizvoda" name="vrstaProizvoda" class="form-control ml-0" th:errorclass="fieldError">
+                        <th:block th:if="${listaVrsteProizvoda != null and !listaVrsteProizvoda.isEmpty()}">
+                            <option value="">---Odredite Vrstu Proizvoda---</option>
+                            <option th:each="vrstaProizv : ${listaVrsteProizvoda}" th:value="${vrstaProizv.vrstaProizvodaId}"
+                                    th:text="${vrstaProizv.naziv}"></option>
+                        </th:block>
+                        <th:block th:if="${listaVrsteProizvoda == null or listaVrsteProizvoda.isEmpty()}">
+                            <option value="">---Nema Nijedne Vrste Proizvoda u Bazi---</option>
+                        </th:block>
+
+                    </select>
+                    <th:block th:if="${listaVrsteProizvoda == null or listaVrsteProizvoda.isEmpty()}">
+                        <a th:href="@{/admin/vrstaProizvoda/addNew}" class="btn btn-link"><i class="fas fa-plus"></i> Dodaj Novu Vrstu Proizvoda</a>
+                    </th:block>
+                    <ul th:if="${#fields.hasErrors('vrstaProizvoda')}">
+                        <li th:each="err : ${#fields.errors('vrstaProizvoda')}" th:text="${err}" class="errorMsg"></li>
+                    </ul>
+                </div>
+
+
+
+                <!--Prenos preostalih polja za objekat Proizvod-->
+                <input type="hidden" th:field="*{proizvodId}">
+
+
+                <th:block th:if="${#fields.hasErrors('global')}">
+                    <h5 style="color: red;">Globalne greške:</h5>
+                    <ul>
+                        <li th:each="err : ${#fields.errors('global')}" th:text="${err}" class="errorMsg"></li>
+                    </ul>
+                </th:block>
+
+
+                <input type="submit" class="btn btn-success" value="Dodaj Novi Proizvod" name="btnNoviProizvod">
+                <a th:href="@{/admin/listaProizvoda}" class="btn btn-outline-secondary">Otkaži</a>
+
+            </form>
+        </div>
+    </div>
+
+
+</div><!-- KRAJ CONTAINER-a -->
+
+
+<!-- Script Source Files -->
+
+<!-- jQuery -->
+<script th:src="@{/js/jquery-3.5.1.min.js}"></script>
+<!-- Popper JS -->
+<script th:src="@{/js/popper.min.js}"></script>
+<!-- Bootstrap 4.5 JS -->
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<!-- Summernote JS file for Bootstrap 4 -->
+<script th:src="@{/summernoteRTE/summernote-bs4.min.js}"></script>
+<!-- Font Awesome -->
+<script th:src="@{/js/all.js}"></script>
+
+<!--/* Aktivacija RICH TEXT EDITOR-a na poljima */-->
+<script type="text/javascript" th:inline="javascript">
+    $(document).ready(function (){
+
+        $('#opis').summernote({
+            height: 350,
+            placeholder: "Unesite Opis Proizvoda"
+        });
+
+        $('#tehnickeInfo').summernote({
+            height: 450,
+            placeholder: "Unesite Tehničke Informacije Proizvoda"
+        });
+
+        /* DODAVANJE fieldError klase na rich text editor-e */
+        let opis = document.getElementById("opis");
+        if(opis.classList.contains("fieldError")){
+            let editorOpis = opis.nextSibling;
+            let editableElement = editorOpis.querySelector(".note-editing-area");
+            editableElement.classList.add("fieldError");
+        }
+
+        let tehnickeInfo = document.getElementById("tehnickeInfo");
+        if(tehnickeInfo.classList.contains("fieldError")){
+            let editorTehnInfo = tehnickeInfo.nextSibling;
+            let editableElement = editorTehnInfo.querySelector(".note-editing-area");
+            editableElement.classList.add("fieldError");
+        }
+        /* KRAJ DODAVANJA fieldError klase na rich text editor-e */
+
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http//www.thymeleaf.org/extras/spring-security" lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<section th:fragment="pregledAranzmanaPolasciSection1(aranzman, listaPutovanja)" id="polasciSection">
+    <div class="col-md-9 mt-5">
+        <h2 class="mb-3">Polasci i Cene</h2>
+        <div class="bottomLineWhite"></div>
+
+        <!--/* Povratna poruka za kada korisnik ima rezervaciju za dato putovanje */-->
+        <th:block th:if="${KorisnikImaRezervaciju}">
+            <div class="alert alert-primary alert-dismissible fade show" role="alert" style="font-size: 15px;">
+                <strong><i class="fas fa-exclamation-circle"></i></strong><span th:text="${' Već imate rezervaciju za izabrani polazak (Datumi putovanja: '}"></span>
+                <span class="font-weight-bold" th:text="${#temporals.format(rezervisanoPutovanje.datumVremePolaska, 'dd.MM.yyyy.') + ' - ' + #temporals.format(rezervisanoPutovanje.datumPovratka, 'dd.MM.yyyy.')}"></span>
+                <span>) Pogledajte detaljnije u <a th:href="@{/korisnik/pregledRezervacija}" class="alert-link">pregledu svojih rezervacija</a>.</span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </th:block>
+
+        <th:block th:if="${listaPutovanja == null or listaPutovanja.isEmpty()}">
+            <div class="alert alert-primary" role="alert" style="font-size: 15px;">
+                <strong><i class="fas fa-exclamation-circle"></i> </strong><span>Trenutno ne postoji nijedan slobodan polazak za ovaj aranžman. Kontaktirajte nas za više informacija o budućim polascima.</span>
+            </div>
+        </th:block>
+
+
+        <div class="card mb-1" th:each="putovanje : ${listaPutovanja}">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-2 text-center" style="font-size: 14px;">
+                        <span class="font-weight-bold d-block">Polazak</span>
+                        <span th:text="${#temporals.format(putovanje.datumVremePolaska, 'dd.MM.yyyy')}"></span>
+                    </div>
+                    <div class="col-md-2 pl-0 text-center" style="font-size: 14px;">
+                        <span class="font-weight-bold d-block">Povratak</span>
+                        <span th:text="${#temporals.format(putovanje.datumPovratka, 'dd.MM.yyyy')}"></span>
+                    </div>
+                    <div class="col-md-1 pl-0 text-center" style="font-size: 14px;">
+                        <span class="font-weight-bold d-block">Dana</span>
+                        <span>[[${aranzman.trajanjeDani}]]</span>
+                    </div>
+                    <div class="col-md-3 align-self-center" th:with="brojSlobodnihMesta = ${@putovanjeServiceImpl.getBrojSlobodnihMestaPutovanja(putovanje)}">
+                        <th:block th:if="${brojSlobodnihMesta > 5}">
+                            <span style="color: forestgreen;"><i class="fas fa-check-circle"></i> Dostupno</span>
+                        </th:block>
+                        <th:block th:if="${brojSlobodnihMesta <= 5}">
+                            <span style="color: #ffac00;"><i class="fas fa-exclamation-circle"></i> Poslednja Mesta</span>
+                        </th:block>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-md-3 pl-0 text-center" style="font-size: 14px;">
+                                <span class="d-block font-weight-bold" >Cena</span>
+                                <th:block th:if="${putovanje.popust != 0}">
+                                    <div style="position: relative;">
+                                        <span class="font-weight-bold d-block">[[${aranzman.cena}]]&#8364;</span>
+                                        <i class="fa fa-slash redSlash"></i>
+                                    </div>
+                                </th:block>
+                                <th:block th:if="${putovanje.popust == 0}">
+                                    <span class="font-weight-bold d-block">[[${aranzman.cena}]]&#8364;</span>
+                                </th:block>
+                            </div>
+                            <th:block th:if="${putovanje.popust != 0}">
+                                <div class="col-md-3 pl-0 pr-0 text-center" style="font-size: 14px;" th:with="cenaAranzmana = ${@putovanjeServiceImpl.cenaPutovanjaAranzmana(aranzman.cena, putovanje.popust)}">
+                                    <span class="font-weight-bold d-block">Sada od</span>
+                                    <span class="font-weight-bold">[[${cenaAranzmana}]]&#8364;</span>
+                                </div>
+                            </th:block>
+                            <th:block th:if="${putovanje.popust == 0}">
+                                <div class="col-md-3">
+
+                                </div>
+                            </th:block>
+                            <div class="col-md-6 d-flex align-items-center justify-content-center">
+                                <!-- dugme za prijavu (rezervaciju) -->
+                                <th:block sec:authorize="hasAuthority('KORISNIK')">
+                                    <a th:href="@{/korisnik/rezervacija(putovanjeId=${putovanje.putovanjeId})}" class="btn btn-outline-success btn-sm">Rezerviši</a>
+                                </th:block>
+                                <th:block sec:authorize="isAnonymous()">
+                                    <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom" title="Morate se ulogovati da biste izvršili rezervaciju">
+                                        <a th:href="@{/korisnik/rezervacija(putovanjeId=${putovanje.putovanjeId})}" style="pointer-events: none;" class="btn btn-outline-success btn-sm" disabled>Rezerviši</a>
+                                    </span>
+                                </th:block>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="bottomLineWhite"></div>
+    </div>
+
+</section>
+
+</body>
+</html>

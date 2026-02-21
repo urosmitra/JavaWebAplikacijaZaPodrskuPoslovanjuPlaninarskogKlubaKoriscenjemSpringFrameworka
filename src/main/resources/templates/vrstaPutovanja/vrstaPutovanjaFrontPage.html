@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <title>Planinarski klub "Summit Explorers"</title>
+
+    <!-- Bootstrap 4.5 CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <!-- reference CSS file -->
+    <link rel="stylesheet" th:href="@{/css/myStyle.css}">
+
+
+    <!--Font Awesome ikonice!-->
+    <link th:href="@{/fontAwesome/all.css}" rel="stylesheet"> <!--load all styles -->
+
+</head>
+<body class="bodyKorisnikBackground">
+
+<!-- Top Bar -->
+<div th:replace="fragments/topBar :: topBar1(brojTelefonaKluba=${klub.brojTelefona}, emailKluba=${klub.email})"></div>
+<!-- kraj Top Bara -->
+
+<!-- Navigation bar fragment -->
+<div th:replace="fragments/navBar :: navBar1"></div>
+<!-- Navigation bar fragment END-->
+
+<div class="container">
+
+    <div class="card"><!--MAIN CARD -->
+        <div class="card-body pl-4 pr-5">
+            <div class="col-md-12 mt-3 pl-0">
+                <h2>[[${vrstaPutovanja.naziv}]]</h2>
+            </div>
+            <div class="card text-white mt-4 mb-5"><!--THUMBNAIL IMAGE CARD -->
+                <img th:src="@{${vrstaPutovanja.getThumbnailPhotoPath()}}" class="card-img" style="height: 350px;">
+<!--                <div class="card-img-overlay d-flex align-items-end">-->
+<!--                    <h2 class="card-title mb-0">[[${vrstaPutovanja.naziv}]]</h2>-->
+<!--                </div>-->
+            </div><!-- KRAJ THUMBNAIL IMAGE CARD -->
+
+            <div class="col-md-9 pl-0">
+                <div th:utext="${vrstaPutovanja.opis}"></div>
+            </div>
+            <div class="bottomLineWhite"></div>
+
+            <div class="col-md-12 mt-5 pl-0">
+                <h3>[[${vrstaPutovanja.naziv}]] - Aranžmani</h3>
+            </div>
+            <div class="bottomLineWhite"></div>
+
+            <th:block th:if="${listaAranzmanaVrstePutovanja == null or listaAranzmanaVrstePutovanja.isEmpty()}">
+                <div class="alert alert-primary" role="alert" style="font-size: 15px;">
+                    <strong><i class="fas fa-exclamation-circle"></i> </strong><span>Trenutno ne postoji nijedan aranžman za ovu vrstu putovanja. Kontaktirajte nas za više informacija o budućim aranžmanima.</span>
+                </div>
+            </th:block>
+
+            <div class="row align-items-start pl-3">
+                <div th:each="aranzman : ${listaAranzmanaVrstePutovanja}" class="card col-md-3 pl-0 pr-0 mr-3 mb-4"> <!--style="width: 20rem; height: 570px;"--> <!-- ARANZMAN CARD -->
+                    <img class="card-img-top" th:src="@{${aranzman.getThumbnailPhotoPath()}}" alt="Thumbnail Slika Aranzmana">
+                        <div class="card-body pl-3">
+                            <h5 class="card-title">[[${aranzman.naziv}]]</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">[[${aranzman.kratakOpis}]]</h6>
+                            <p class="card-text">Trajanje: <span class="font-weight-bolder">[[${aranzman.trajanjeDani}]] dana</span></p>
+                            <p class="card-text">Zahtevnost: <span class="font-weight-bolder" style="font-size: 18px;">[[${aranzman.zahtevnost}]]</span>/ 5</p>
+
+                            <div class="row"> <!--CENA ARANZMAN I POPUST AKO IMA -->
+                                <div class="col">
+                                    <span class="font-weight-bold d-block">Cena</span>
+                                    <th:block th:if="${@putovanjeServiceImpl.daLiImaPopustaZaAranzman(aranzman.aranzmanId)}">
+                                        <div style="position: relative;">
+                                            <span class="font-weight-bold d-block">[[${aranzman.cena}]]&#8364;</span>
+                                            <i class="fa fa-slash redSlash2"></i>
+                                        </div>
+                                    </th:block>
+                                    <th:block th:if="${@putovanjeServiceImpl.daLiImaPopustaZaAranzman(aranzman.aranzmanId) == false}">
+                                        <span class="font-weight-bold d-block">[[${aranzman.cena}]]&#8364;</span>
+                                    </th:block>
+                                </div>
+                                <th:block th:if="${@putovanjeServiceImpl.daLiImaPopustaZaAranzman(aranzman.aranzmanId)}">
+                                    <div class="col" th:with="minCenaAranzmana = ${@putovanjeServiceImpl.getNajmanjaCenaPutovanjaAranzmana(aranzman.aranzmanId)}">
+                                        <span class="font-weight-bold d-block">Sada od</span>
+                                        <span class="font-weight-bold">[[${minCenaAranzmana}]]&#8364;</span>
+                                    </div>
+                                </th:block>
+                            </div><!-- KRAJ CENA ARANZMAN I POPUST AKO IMA -->
+
+                            <div class="row mt-2 mb-3">
+                                <div class="col">
+                                    <th:block th:with="listaPutovanjaAvailableZaKorisnika = ${@putovanjeServiceImpl.getAllBuducaPutovanjaAranzmanaAvailableZaKorisnika(aranzman.aranzmanId)}">
+                                            <th:block th:if="${listaPutovanjaAvailableZaKorisnika == null or listaPutovanjaAvailableZaKorisnika.isEmpty()}">
+                                                <!--/* Dakle nema slobodnih putovanja -> Ispisi nedostupno ili tako nesto */-->
+                                                <p class="card-text font-weight-bolder pt-2" style="color: red;"><i class="fas fa-exclamation-circle"></i> Trenutno nema nijedno dostupno putovanje</p>
+                                            </th:block>
+                                            <th:block th:if="${listaPutovanjaAvailableZaKorisnika != null and !listaPutovanjaAvailableZaKorisnika.isEmpty()}">
+                                                <!--/* Dakle IMA slobodnih putovanja -> Ispisi dostupno ili tako nesto */-->
+                                                <p class="card-text font-weight-bolder pt-2" style="color: green;"><i class="fas fa-check-circle"></i> DOSTUPNO</p>
+                                            </th:block>
+                                    </th:block>
+                                </div>
+                            </div>
+
+                            <a th:href="@{'/pregledAranzmana/' + ${aranzman.aranzmanId}}" class="btn btn-outline-info">Pogledaj Detaljnije</a>
+
+                    </div>
+                </div><!--KRAJ CARD-A ARANZMAN -->
+            </div>
+
+        </div>
+    </div>
+
+
+    <!--/* Footer fragment */-->
+    <div th:replace="fragments/footer :: footer2(brojTelefonaKluba=${klub.brojTelefona}, emailKluba=${klub.email})"></div>
+    <!--/* Footer fragment END */-->
+
+</div>
+
+
+
+<!-- Script Source Files -->
+
+<!-- jQuery -->
+<script th:src="@{/js/jquery-3.5.1.min.js}"></script>
+<!-- Popper JS -->
+<script th:src="@{/js/popper.min.js}"></script>
+<!-- Bootstrap 4.5 JS -->
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<!-- Font Awesome -->
+<script th:src="@{/js/all.js}"></script>
+</body>
+</html>

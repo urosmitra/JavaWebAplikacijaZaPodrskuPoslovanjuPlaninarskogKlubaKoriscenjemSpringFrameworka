@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http//www.thymeleaf.org/extras/spring-security" lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<footer class="mt-4" th:fragment="footer1">
+    <div style="background-color: #22262a;">
+        <div class="container">
+            <div class="row py-3 d-flex align-items-center">
+                <div class="col-md-12 text-center mb-2">
+                    <th:block sec:authorize="hasAuthority('ADMIN')">
+                        <a th:href="@{/admin/listaKorisnika}"><i class="fas fa-home fa-lg text-light"></i></a>
+                    </th:block>
+                    <th:block sec:authorize="hasAuthority('MENADZER')">
+                        <a th:href="@{/manager/listaProizvoda}"><i class="fas fa-home fa-lg text-light"></i></a>
+                    </th:block>
+                </div>
+                <div class="col-md-12 text-center text-secondary">
+                    <span>&copy; Copyright 2022 Summit Explorers</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<footer class="page-footer bg-dark mt-4" th:fragment="footer2(brojTelefonaKluba, emailKluba)">
+    <div style="background-color: #48b460;">
+        <div class="container">
+            <div class="row py-2 d-flex align-items-center">
+                <div class="col-md-12 text-center">
+                    <a href="#"><i class="fab fa-facebook text-light mr-4"></i></a>
+                    <a href="#"><i class="fab fa-twitter text-light mr-4"></i></a>
+                    <a href="#"><i class="fab fa-instagram text-light mr-4"></i></a>
+                    <a href="#"><i class="fab fa-whatsapp text-light mr-4"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container text-center text-md-left mt-5">
+        <div class="row">
+            <div class="col-md-3 mx-auto mb-4">
+                <h6 class="text-uppercase font-weight-bold text-white">Summit Explorers</h6>
+                <hr class="bg-success mb-4 mt-0 d-inline-block mx-auto" style="width: 170px; height: 2px">
+                <p class="mt-2 text-light">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            </div>
+
+
+            <div class="col-md-2 mx-auto mb-4">
+                <h6 class="text-uppercase font-weight-bold text-white">Vrste Putovanja</h6>
+                <hr class="bg-success mb-4 mt-0 d-inline-block mx-auto" style="width: 159px; height: 2px">
+
+                <ul class="list-unstyled" th:with="listaVrstePutovanja = ${@vrstaPutovanjaServiceImpl.getAllVrstePutovanja()}">
+                    <th:block th:each="vrstaPutovanja : ${listaVrstePutovanja}">
+                        <li class="my-2"><a class="linkFooter text-light" th:href="@{'/vrstaPutovanja/' + ${vrstaPutovanja.vrstaPutovanjaId}}">[[${vrstaPutovanja.naziv}]]</a></li>
+                    </th:block>
+                </ul>
+            </div>
+
+            <div class="col-md-3 mx-auto mb-4">
+                <h6 class="text-uppercase font-weight-bold text-white">Kontaktirajte Nas</h6>
+                <hr class="bg-success mb-4 mt-0 d-inline-block mx-auto" style="width: 170px; height: 2px">
+
+                <ul class="list-unstyled">
+                    <li class="my-2 text-light"><i class="fas fa-home mr-2"></i>Comtrade Technology Center, Savski Nasip 7, Novi Beograd</li>
+                    <li class="my-2"><a class="linkFooter text-light" th:href="@{'tel:' + ${brojTelefonaKluba}}"><i class="fas fa-phone-square-alt mr-2"></i> +381 11 2096 777</a></li>
+                    <li class="my-2"><a class="linkFooter text-light" th:href="@{'mailto:' + ${emailKluba}}"><i class="fas fa-envelope-open mr-2"></i> [[${klub.email}]]</a></li>
+                </ul>
+            </div>
+
+
+        </div>
+    </div>
+
+    <div class="text-center text-secondary py-2" style="background-color: #22262a;">
+        &copy; Copyright 2022 Summit Explorers
+    </div>
+
+
+</footer>
+
+</body>
+</html>

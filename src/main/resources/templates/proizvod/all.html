@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <title>Planinarski klub "Summit Explorers"</title>
+
+    <!-- Bootstrap 4.5 CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <!-- reference CSS file -->
+    <link rel="stylesheet" th:href="@{/css/myStyle.css}">
+
+    <!--Font Awesome ikonice!-->
+    <link th:href="@{/fontAwesome/all.css}" rel="stylesheet">
+    <!--load all styles -->
+</head>
+<body>
+
+<!-- Navigation bar fragment -->
+<div th:replace="fragments/navBar :: navBar1"></div>
+<!-- Navigation bar fragment END-->
+
+<div class="container" style="min-height: 30rem;">
+    <div class="row ml-0 mt-2">
+        <h1>Lista Proizvoda</h1>
+    </div>
+
+    <div class="row mb-4 mt-2">
+        <div class="col-md-3">
+            <a th:href="@{/admin/proizvod/addNew}" class="btn btn-outline-info">Dodaj Novi Proizvod</a>
+        </div>
+    </div>
+
+
+    <!--/* POVRATNE PORUKE */-->
+
+    <th:block th:if="${messageSuccess}">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <span>Uspešno ste dodali <span class="font-weight-bolder">novi proizvod!</span> (ID Proizvoda: <span class="font-weight-bolder">[[${noviProizvod.proizvodId}]]</span>, Naziv: <span class="font-weight-bolder">[[${noviProizvod.naziv}]]</span>)</span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </th:block>
+
+    <th:block th:if="${messageSuccessEdit}">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <span><i class="fas fa-check font-weight-bolder"></i> Uspešno ste sačuvali izmene za proizvod! (ID: <span class="font-weight-bolder">[[${proizvodEditovan.proizvodId}]]</span>, Naziv: <span class="font-weight-bolder">[[${proizvodEditovan.naziv}]]</span>)</span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </th:block>
+
+    <th:block th:if="${messageSuccessDelete}">
+        <div class="alert alert-primary alert-dismissible fade show" role="alert">
+            <span><i class="far fa-trash-alt font-weight-bolder"></i> Uspešno ste obrisali proizvod. (Naziv: <span class="font-weight-bolder">[[${proizvodObrisan.naziv}]]</span>)</span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </th:block>
+    <!--/* KRAJ POVRATNIH PORUKA */-->
+
+
+    <th:block th:if="${listaSvihProizvoda == null or listaSvihProizvoda.isEmpty()}">
+        <h2>Nema nijednog proizvoda u bazi!</h2>
+    </th:block>
+
+    <th:block th:if="${listaSvihProizvoda != null and !listaSvihProizvoda.isEmpty()}">
+
+        <!--/* KEYWORD pretraga */-->
+        <div class="col-md-4 d-inline-block pl-0 mb-3">
+            <input type="text" id="txtSearch" name="keyword" class="form-control" placeholder="Pretražite proizvode po nazivu">
+        </div>
+<!--        <button type="submit" class="btn btn-outline-success"><i class="fas fa-search"></i></button>-->
+
+        <!--/* KRAJ KEYWORD pretrage */-->
+
+        <table id="proizvodiTable" class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th style="width: 7%;">ID Proizvoda</th>
+                    <th>Naziv</th>
+                    <th>Thumbnail</th>
+                    <th>Količina</th>
+                    <th>Cena</th>
+                    <th style="max-width: 110px;">Cena sa Popustom</th>
+                    <th style="max-width: 150px;">Vrsta Proizvoda</th>
+                    <th>Slike Proizvoda</th>
+                    <th>Akcije</th> <!-- update i delete -->
+                </tr>
+            </thead>
+            <tbody id="bodyTableProizvodi">
+                <tr th:each="proizvod : ${listaSvihProizvoda}">
+                    <td th:text="${proizvod.proizvodId}"></td>
+                    <td style="max-width: 300px;" th:text="${proizvod.naziv}"></td>
+
+                    <!--/* THUMBNAIL PHOTO */-->
+                    <th:block th:if="${proizvod.thumbnailPhoto != null}">
+                        <td class="p-0" style="border: 3px solid #80d5aa; max-width: 200px;"><img th:src="@{${proizvod.getThumbnailPhotoPath()}}" style="object-fit: cover; height: 150px;"  class="img-fluid w-100"></td>
+                    </th:block>
+                    <th:block th:if="${proizvod.thumbnailPhoto == null}">
+                        <td style="max-width: 200px;">NEMA Thumbnail Sliku, dodajte sliku u izmeni proizvoda</td>
+                    </th:block>
+                    <!--/* KRAJ THUMBNAIL PHOTO */-->
+
+                    <td class="font-weight-bolder" th:text="${proizvod.kolicina}"></td>
+                    <td th:text="${proizvod.cena} + '&#8364;'"></td>
+
+                    <td th:with="cenaSaPopustom = ${@proizvodServiceImpl.getCenaProizvodaSaPopustom(proizvod)}" class="font-weight-bolder">[[${cenaSaPopustom}]]&#8364;</td>
+
+                    <!--Vrsta Proizvoda -->
+                    <th:block th:if="${proizvod.vrstaProizvoda != null}">
+                        <td style="max-width: 200px;" th:text="${proizvod.vrstaProizvoda.naziv}"></td>
+                    </th:block>
+                    <th:block th:if="${proizvod.vrstaProizvoda == null}">
+                        <td style="max-width: 200px;">NEMA, <a class="btn-link pl-0" th:href="@{/admin/vrstaProizvoda/addNew}">DODAJ NOVU VRSTU PROIZVODA</a> ili ažuriraj u EDIT formi</td>
+                    </th:block>
+                    <!--Vrsta Proizvoda KRAJ -->
+
+                    <td><!--Slike proizvoda -->
+                        <a th:href="@{/admin/proizvod/slikeProizvoda(proizvodId=${proizvod.proizvodId})}" style="max-width: 150px;" class="btn btn-success">Menadžment Slika Proizvoda (ID: [[${proizvod.proizvodId}]])</a>
+                    </td>
+
+                    <td><!-- Akcije: Edit i Delete -->
+                        <a th:href="@{/admin/proizvod/edit(proizvodId=${proizvod.proizvodId})}" class="btn btn-warning btn-sm mb-1 d-block">Pregled i Izmena</a>
+                        <a th:href="@{/admin/proizvod/delete(proizvodId=${proizvod.proizvodId})}" class="btn btn-danger btn-sm"
+                        th:data-proizvodId="${proizvod.proizvodId}"
+                        th:data-proizvodNaziv="${proizvod.naziv}"
+                        onclick="return confirm('Da li ste sigurni da želite da obrišete proizvod? (ID: ' + this.getAttribute('data-proizvodId') + ', Naziv: ' + this.getAttribute('data-proizvodNaziv') + ')')">
+                            Obriši
+                        </a>
+                    </td>
+
+
+                </tr>
+            </tbody>
+
+
+        </table>
+    </th:block>
+
+
+
+
+</div><!-- KRAJ Container -->
+
+<!--/* Footer fragment */-->
+<div class="container">
+    <div th:replace="fragments/footer :: footer1"></div>
+</div>
+<!--/* Footer fragment END */-->
+
+
+
+<!-- Script Source Files -->
+
+<!-- jQuery -->
+<script th:src="@{/js/jquery-3.5.1.min.js}"></script>
+<!-- Popper JS -->
+<script th:src="@{/js/popper.min.js}"></script>
+<!-- Bootstrap 4.5 JS -->
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<!-- Font Awesome -->
+<script th:src="@{/js/all.js}"></script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    let proizvodi = /*[[${listaSvihProizvoda}]]*/ null;
+    /*]]>*/
+
+    /*$('#txtSearch').on('keyup', function (){
+        let value = $(this).val();
+        console.log('Value = ' + value);
+
+        //Get Filtered proizvodi list
+        let filteredProizvodi = FilterFunction(value, proizvodi);
+
+        //Clear data in table tableProizvodi and rebuild data with filteredProizvodi data
+        rebuildTableProizvodi(filteredProizvodi);
+    });*/
+
+    function FilterFunction(value, listaProizvoda){
+        let filteredData = [];
+        for(let i = 0; i < listaProizvoda.length; i++){
+            value = value.toLowerCase(); //prebacujemo sve u lower case da bismo izbegli caseSensitive pretragu
+            let nazivProizv = listaProizvoda[i].naziv.toLowerCase();
+
+            if(nazivProizv.includes(value)){
+                filteredData.push(listaProizvoda[i]);
+            }
+        }
+
+        return filteredData;
+    }
+
+    $('#txtSearch').on('keyup', function (){
+        let keyword = $(this).val();
+        $.ajax({
+            type: 'GET',
+            url: '/ucitajFiltriraneProizvode/' + keyword,
+            success: function (result) {
+                console.log(this.url);
+                let listaProizvoda = JSON.parse(result);
+                let s = '';
+                for(let i = 0; i < listaProizvoda.length; i++){
+                    let cenaSaPopustom = listaProizvoda[i].cena;
+                    if(listaProizvoda[i].popust > 0){
+                        cenaSaPopustom = cenaSaPopustom * (1 - listaProizvoda[i].popust/100);
+                    }
+
+                    s += `<tr>
+                            <td>${listaProizvoda[i].proizvodId}</td>
+                            <td style="max-width: 300px;">${listaProizvoda[i].naziv}</td>
+                            `;
+                    if(listaProizvoda[i].thumbnailPhoto != null){
+                        let thumbnailPhotoPath = "/slikeProizvodi/proizvodId-" + listaProizvoda[i].proizvodId + "/" + listaProizvoda[i].thumbnailPhoto;
+                        s += `<td class="p-0" style="border: 3px solid #80d5aa; max-width: 200px;"><img src="${thumbnailPhotoPath}" style="object-fit: cover; height: 150px;"  class="img-fluid w-100"></td>
+                              `;
+                    }
+                    else{
+                        s += `<td style="max-width: 200px;">NEMA Thumbnail Sliku, dodajte sliku u izmeni proizvoda</td>
+                              `;
+                    }
+                    s += `<td class="font-weight-bolder">${listaProizvoda[i].kolicina}</td>
+                          `;
+
+                    s += `<td>${listaProizvoda[i].cena}&#8364;</td>
+                          `;
+
+                    s += `<td class="font-weight-bolder">${cenaSaPopustom}&#8364;</td>
+                          `;
+
+                    if(listaProizvoda[i].vrstaProizvoda != null){
+                        s += `<td style="max-width: 200px;">${listaProizvoda[i].vrstaProizvoda.naziv}</td>
+                              `;
+                    }else {
+                        s += `<td>NEMA, <a class="btn-link pl-0" href="/admin/vrstaProizvoda/addNew">DODAJ NOVU VRSTU PROIZVODA</a> ili ažuriraj u EDIT formi</td>
+                              `;
+                    }
+
+                    let linkSlikaProizvoda = "/admin/proizvod/slikeProizvoda?proizvodId=" + listaProizvoda[i].proizvodId;
+
+                    s += `<td>
+                              <a href="${linkSlikaProizvoda}" style="max-width: 150px;" class="btn btn-success">Menadžment Slika Proizvoda (ID: ${listaProizvoda[i].proizvodId})</a>
+                          </td>
+                               `;
+
+                    // Akcije: Edit i Delete
+                    s += `<td>
+                            <a href="/admin/proizvod/edit?proizvodId=${listaProizvoda[i].proizvodId}" class="btn btn-warning btn-sm mb-1 d-block">Pregled i Izmena</a>
+                            <a href="/admin/proizvod/delete?proizvodId=${listaProizvoda[i].proizvodId}" class="btn btn-danger btn-sm"
+                            data-proizvodId="${listaProizvoda[i].proizvodId}"
+                            data-proizvodNaziv="${listaProizvoda[i].naziv}"
+                            onclick="return confirm('Da li ste sigurni da želite da obrišete proizvod? (ID: ' + this.getAttribute('data-proizvodId') + ', Naziv: ' + this.getAttribute('data-proizvodNaziv') + ')')">
+                                Obriši
+                            </a>
+                          </td>
+                               `;
+
+                    s += `</tr>
+                               `;
+
+                }
+                $('#bodyTableProizvodi').html(s);
+
+
+            }
+        });
+
+    });
+
+</script>
+
+</body>
+</html>

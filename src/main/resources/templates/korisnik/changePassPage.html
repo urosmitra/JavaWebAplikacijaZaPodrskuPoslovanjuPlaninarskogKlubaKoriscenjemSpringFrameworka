@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <title>Planinarski klub "Summit Explorers"</title>
+
+    <!-- Bootstrap 4.5 CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <!-- reference CSS file -->
+    <link rel="stylesheet" th:href="@{/css/myStyle.css}">
+
+
+    <!--Font Awesome ikonice!-->
+    <link th:href="@{/fontAwesome/all.css}" rel="stylesheet"> <!--load all styles -->
+</head>
+<body class="bodyKorisnikBackground">
+<!-- Top Bar -->
+<div th:replace="fragments/topBar :: topBar1(brojTelefonaKluba=${klub.brojTelefona}, emailKluba=${klub.email})"></div>
+<!-- kraj Top Bara -->
+
+
+<!-- Navigation bar fragment -->
+<div th:replace="fragments/navBar :: navBar1"></div>
+<!-- Navigation bar fragment END-->
+
+<div class="container" style="background-color: #fff; padding-left: 4rem;">
+    <div class="col" style="height: 2rem;"></div>
+
+    <div class="col-md-12 mb-4 pl-0">
+        <h2>Promena lozinke (ID korisnika: [[${korisnik.korisnikId}]])</h2>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-5">
+            <form action="#" th:action="@{/korisnik/editAccChangePass}" th:object="${korisnikChangePassDto}" method="post">
+                <div class="form-group">
+                    <label for="oldPass">Stari password:</label>
+                    <input type="password"  th:field="*{oldPasswordInput}" id="oldPass" placeholder="Unesite stari password" required class="form-control" th:errorclass="fieldError">
+                    <ul th:if="${#fields.hasErrors('oldPasswordInput')}">
+                        <li th:each="err : ${#fields.errors('oldPasswordInput')}" th:text="${err}" class="errorMsg"></li>
+                    </ul>
+                </div>
+
+                <div class="form-group">
+                    <label for="newPass">Novi password:</label>
+                    <input type="password"  th:field="*{newPassword}" id="newPass" placeholder="Unesite novi password" required class="form-control" th:errorclass="fieldError">
+                    <ul th:if="${#fields.hasErrors('newPassword')}">
+                        <li th:each="err : ${#fields.errors('newPassword')}" th:text="${err}" class="errorMsg"></li>
+                    </ul>
+                </div>
+
+                <div class="form-group">
+                    <label for="newPassConfirm">Potvrdite novi password:</label>
+                    <input type="password"  th:field="*{newPasswordMatch}" id="newPassConfirm" placeholder="Unesite ponovo novi password" required class="form-control" th:errorclass="fieldError">
+                    <ul th:if="${#fields.hasErrors('newPasswordMatch')}">
+                        <li th:each="err : ${#fields.errors('newPasswordMatch')}" th:text="${err}" class="errorMsg"></li>
+                    </ul>
+                </div>
+
+                <th:block th:if="${#fields.hasErrors('global')}">
+                    <h5 style="color: red;">Greške:</h5>
+                    <ul>
+                        <li th:each="err : ${#fields.errors('global')}" th:text="${err}" class="errorMsg"></li>
+                    </ul>
+                </th:block>
+
+
+                <input type="hidden" th:field="*{oldPassword}">
+
+                <input type="submit" class="btn btn-warning" value="Promeni password" name="btnPromeniPass">
+                <a class="btn btn-outline-secondary" th:href="@{/korisnik/pregledNaloga}">Otkaži</a>
+
+            </form>
+        </div>
+    </div>
+
+
+    <div class="col" style="height: 2rem;"></div>
+</div>
+<div class="container px-0">
+    <!--/* Footer fragment */-->
+    <div th:replace="fragments/footer :: footer2(brojTelefonaKluba=${klub.brojTelefona}, emailKluba=${klub.email})"></div>
+    <!--/* Footer fragment END */-->
+</div>
+
+<!-- Script Source Files -->
+
+<!-- jQuery -->
+<script th:src="@{/js/jquery-3.5.1.min.js}"></script>
+<!-- Popper JS -->
+<script th:src="@{/js/popper.min.js}"></script>
+<!-- Bootstrap 4.5 JS -->
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<!-- Font Awesome -->
+<script th:src="@{/js/all.js}"></script>
+</body>
+</html>

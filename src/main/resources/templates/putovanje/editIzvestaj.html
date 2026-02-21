@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <title>Planinarski klub "Summit Explorers"</title>
+
+    <!-- Bootstrap 4.5 CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+
+    <!-- reference CSS file -->
+    <link rel="stylesheet" th:href="@{/css/myStyle.css}">
+
+
+
+    <!--load all styles -->
+    <!--Font Awesome ikonice!-->
+    <link th:href="@{/fontAwesome/all.css}" rel="stylesheet">
+
+    <!--Bootstrap 4 datetime picker css -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap-datetimepicker.min.css}">
+
+</head>
+<body>
+
+
+<!-- Navigation bar fragment -->
+<div th:replace="fragments/navBar :: navBar1"></div>
+<!-- Navigation bar fragment END-->
+
+<div class="container">
+    <div class="col-md-9 ml-0 mt-2 pl-0">
+        <h2>Unesite izveštaj za putovanje (Aranžman ID: [[${aranzman.aranzmanId}]], Naziv: [[${aranzman.naziv}]])</h2>
+    </div>
+
+    <!--/* POVRATNE PORUKE */-->
+    <th:block th:if="${failMessage}">
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <span th:text="${failMessage}"></span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </th:block>
+    <!--/* KRAJ POVRATNE PORUKE */-->
+
+        <form action="#" th:action="@{/admin/putovanje/editIzvestaj}" th:object="${putovanje}" method="POST">
+
+            <div class="form-group ml-3 pt-3">
+                <label>Putovanje ID: </label> <span>[[${putovanje.putovanjeId}]]</span>
+            </div>
+
+            <div class="form-group col-md-8">
+                <label for="izvestaj">Izveštaj sa putovanja:</label>
+                <textarea th:field="*{izvestaj}" id="izvestaj" class="form-control" rows="40" placeholder="Unesite izveštaj" th:errorclass="fieldError"></textarea>
+                <ul th:if="${#fields.hasErrors('izvestaj')}">
+                    <li th:each="err : ${#fields.errors('izvestaj')}" th:text="${err}" class="errorMsg"></li>
+                </ul>
+            </div>
+
+            <div class="form-group col-md-5">
+                <label for="datumVremePolaska">Datum i vreme polaska:</label>
+                <input type="text" th:field="*{datumVremePolaska}" id="datumVremePolaska" required class="form-control" placeholder="Unesite datum i vreme polaska" th:errorclass="fieldError" readonly>
+                <ul th:if="${#fields.hasErrors('datumVremePolaska')}">
+                    <li th:each="err : ${#fields.errors('datumVremePolaska')}" th:text="${err}" class="errorMsg"></li>
+                </ul>
+            </div>
+
+            <div class="form-group col-md-5">
+                <label for="datumPovratka">Datum povratka:</label>
+                <input type="date" name="datumPovratka" th:value="${#temporals.format(putovanje.datumPovratka, 'yyyy-MM-dd')}"  id="datumPovratka" class="form-control" placeholder="Datum povratka"  required th:errorclass="fieldError" readonly>
+                <p class="mb-1" style="font-size: 13px; color: #154f81;">Datum povratka se računa u skladu sa izabranim datumom polaska i trajanjem aranžmana u danima.</p>
+                <ul th:if="${#fields.hasErrors('datumPovratka')}">
+                    <li th:each="err : ${#fields.errors('datumPovratka')}" th:text="${err}" class="errorMsg"></li>
+                </ul>
+            </div>
+
+            <div class="form-group col-md-4">
+                <label for="popust">Popust:</label>
+                <input type="text" th:field="*{popust}" id="popust" placeholder="Popust na cenu aranžmana (možete ostaviti prazno)" class="form-control" readonly th:errorclass="fieldError">
+                <ul th:if="${#fields.hasErrors('popust')}">
+                    <li th:each="err : ${#fields.errors('popust')}" th:text="${err}" class="errorMsg"></li>
+                </ul>
+            </div>
+
+            <div class="form-group col-md-4">
+                <label for="brojPrijavljenih">Broj prijavljenih: </label>
+                <input type="text" name="brojPrijavljenih" id="brojPrijavljenih" class="form-control" th:value="${putovanje.brojPrijavljenih}" readonly>
+                <ul th:if="${#fields.hasErrors('brojPrijavljenih')}">
+                    <li th:each="err : ${#fields.errors('brojPrijavljenih')}" th:text="${err}" class="errorMsg"></li>
+                </ul>
+            </div>
+            <div class="form-group col-md-5">
+                <label for="status">Status:</label>
+                <input type="text" th:field="*{status}" id="status" readonly class="form-control" placeholder="Status putovanja">
+                <ul th:if="${#fields.hasErrors('status')}">
+                    <li th:each="err : ${#fields.errors('status')}" th:text="${err}" class="errorMsg"></li>
+                </ul>
+            </div>
+
+            <input type="submit" class="btn btn-warning" value="Sačuvaj Izmene" name="btnIzmeniPutovanje">
+<!--            <a href="javascript:history.back()" class="btn btn-outline-secondary">Otkaži</a>-->
+            <a th:href="@{${session.previous_page_izvestaj_form}}" class="btn btn-outline-secondary">Otkaži</a>
+
+            <!--/* Prenos polja hidden */-->
+            <input type="hidden" th:field="*{aranzman}">
+            <input type="hidden" th:field="*{putovanjeId}">
+
+        </form>
+
+
+</div>
+
+
+
+<!-- Script Source Files -->
+
+<!-- jQuery -->
+<script th:src="@{/js/jquery-3.5.1.min.js}"></script>
+<!-- Popper JS -->
+<script th:src="@{/js/popper.min.js}"></script>
+<!-- Bootstrap 4.5 JS -->
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<!-- Font Awesome -->
+<script th:src="@{/js/all.js}"></script>
+<!-- Moment.js -->
+<script th:src="@{/js/moment-with-locales.min.js}"></script>
+<!--Bootstrap 4 datetime picker -->
+<script th:src="@{/js/bootstrap-datetimepicker.min.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+    $(function () {
+        $('#datumVremePolaska').datetimepicker({
+            icons: {
+                time: 'far fa-clock',
+                date: 'fa fa-calendar',
+                up: 'fa fa-chevron-up',
+                down: 'fa fa-chevron-down',
+                previous: 'fa fa-chevron-left',
+                next: 'fa fa-chevron-right',
+                today: 'fa fa-crosshairs',
+                clear: 'fa fa-trash-o',
+                close: 'fa fa-times'
+            },
+            locale: moment.locale('sr'),
+            format: 'DD.MM.YYYY. HH:mm'
+
+        }).on( "dp.change", function() {
+            //     // Fired when the date is changed.
+            let datumVremePolaskaValue = document.querySelector('#datumVremePolaska').value;
+            let momentDatePolazak = moment(datumVremePolaskaValue, 'DD.MM.YYYY. HH:mm'); //PRVO PARSIRAMO DOBIJENI STRING U MOMENT DATE OBJEKAT
+
+            let trajanjeDani = [[${aranzman.trajanjeDani}]] - 1;
+            let momentDatePovratak = momentDatePolazak.add(trajanjeDani, 'days'); //KREIRAMO MOMENT DATE OBJEKAT ZA DATUM POVRATKA
+            document.querySelector('#datumPovratka').value = momentDatePovratak.format('YYYY-MM-DD'); //.format(...) vraca formatiran string moment datuma
+
+        });
+
+    });
+</script>
+</body>
+</html>

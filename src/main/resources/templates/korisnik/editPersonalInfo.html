@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <title>Planinarski klub "Summit Explorers"</title>
+
+    <!-- Bootstrap 4.5 CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <!-- reference CSS file -->
+    <link rel="stylesheet" th:href="@{/css/myStyle.css}">
+
+
+    <!--Font Awesome ikonice!-->
+    <link th:href="@{/fontAwesome/all.css}" rel="stylesheet"> <!--load all styles -->
+</head>
+<body class="bodyKorisnikBackground">
+<!-- Top Bar -->
+<div th:replace="fragments/topBar :: topBar1(brojTelefonaKluba=${klub.brojTelefona}, emailKluba=${klub.email})"></div>
+<!-- kraj Top Bara -->
+
+<!-- Navigation bar fragment -->
+<div th:replace="fragments/navBar :: navBar1"></div>
+<!-- Navigation bar fragment END-->
+
+<div class="container" style="background-color: #fff; padding-left: 4rem;">
+    <div class="col" style="height: 2rem;"></div>
+
+    <div class="col-md-12 mb-4 pl-0">
+        <h2>Izmena Naloga (ID korisnika: [[${korisnik.korisnikId}]])</h2>
+    </div>
+
+    <!--/*  POVRATNE PORUKE */-->
+    <th:block th:if="${porukaAccExists}">
+        <div class="alert alert-danger alert-dismissible fade show ml-3 col-md-7 mb-2" role="alert">
+            <span>[[${porukaAccExists}]] Unet email: <span style="font-weight: bold;">[[${unetEmail}]]</span></span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </th:block>
+    <!--/* KRAJ POVRATNIH PORUKA */-->
+
+
+    <div class="row">
+        <div class="col-md-7">
+            <form action="#" th:action="@{/korisnik/editAcc}" th:object="${korisnik}" method="post">
+                <div class="form-group">
+                    <label for="ime">Ime:</label>
+                    <input type="text" name="ime" th:value="${korisnik.ime}" id="ime" placeholder="Ime korisnika" required class="form-control" th:errorclass="fieldError">
+                    <ul th:if="${#fields.hasErrors('ime')}">
+                        <li th:each="err : ${#fields.errors('ime')}" th:text="${err}" class="errorMsg"></li>
+                    </ul>
+                </div>
+
+                <div class="form-group">
+                    <label for="prezime">Prezime:</label>
+                    <input type="text" name="prezime" th:value="${korisnik.prezime}" id="prezime" placeholder="Prezime korisnika" required class="form-control" th:errorclass="fieldError">
+                    <ul th:if="${#fields.hasErrors('prezime')}">
+                        <li th:each="err : ${#fields.errors('prezime')}" th:text="${err}" class="errorMsg"></li>
+                    </ul>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" name="email" th:value="${korisnik.email}" id="email" placeholder="Email korisnika" required class="form-control" th:errorclass="fieldError">
+                    <ul th:if="${#fields.hasErrors('email')}">
+                        <li th:each="err : ${#fields.errors('email')}" th:text="${err}" class="errorMsg"></li>
+                    </ul>
+                </div>
+
+                <div class="form-group">
+                    <label for="brojTelefona">Broj telefona:</label>
+                    <input id="brojTelefona" type="text" name="brojTelefona" th:value="${korisnik.brojTelefona}" class="form-control"
+                           placeholder="Broj telefona korisnika" required="true" th:errorclass="fieldError">
+                    <ul th:if="${#fields.hasErrors('brojTelefona')}">
+                        <li th:each="err : ${#fields.errors('brojTelefona')}" th:text="${err}" class="errorMsg"></li>
+                    </ul>
+                </div>
+
+                <!--Prenos preostalih polja za objekat korisnik-->
+                <input type="hidden" th:field="*{korisnikId}">
+                <input type="hidden" th:field="*{password}">
+                <input type="hidden" th:field="*{uloga}">
+
+                <input type="submit" class="btn btn-warning" value="Sačuvaj Izmene" name="btnSacuvajIzmene">
+                <input type="submit" class="btn btn-outline-secondary" value="Otkaži" name="btnOtkazi">
+            </form>
+        </div>
+    </div>
+
+    <div class="col" style="height: 2rem;"></div>
+
+</div>
+<div class="container px-0">
+    <!--/* Footer fragment */-->
+    <div th:replace="fragments/footer :: footer2(brojTelefonaKluba=${klub.brojTelefona}, emailKluba=${klub.email})"></div>
+    <!--/* Footer fragment END */-->
+</div>
+
+<!-- Script Source Files -->
+
+<!-- jQuery -->
+<script th:src="@{/js/jquery-3.5.1.min.js}"></script>
+<!-- Popper JS -->
+<script th:src="@{/js/popper.min.js}"></script>
+<!-- Bootstrap 4.5 JS -->
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<!-- Font Awesome -->
+<script th:src="@{/js/all.js}"></script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http//www.thymeleaf.org/extras/spring-security" lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <title>Planinarski klub "Summit Explorers"</title>
+
+    <!-- Bootstrap 4.5 CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <!-- reference CSS file -->
+    <link rel="stylesheet" th:href="@{/css/myStyle.css}">
+
+    <!--Font Awesome ikonice!-->
+    <link th:href="@{/fontAwesome/all.css}" rel="stylesheet">
+
+    <!--LightBox efekat za Galeriju slika -->
+    <link rel="stylesheet" th:href="@{/ekko-lightBoxGallery/ekko-lightbox.css}">
+    <!--load all styles -->
+</head>
+<body class="bodyKorisnikBackground">
+
+<!-- Top Bar -->
+<div th:replace="fragments/topBar :: topBar1(brojTelefonaKluba=${klub.brojTelefona}, emailKluba=${klub.email})"></div>
+<!-- kraj Top Bara -->
+
+<!-- Navigation bar fragment -->
+<div th:replace="fragments/navBar :: navBar1"></div>
+<!-- Navigation bar fragment END-->
+<div class="container">
+    <div class="card text-white mt-4 mb-4">
+        <img th:src="@{${aranzman.getThumbnailPhotoPath()}}" class="card-img" style="height: 320px;">
+        <div class="card-img-overlay d-flex align-items-end">
+            <h2 class="card-title mb-0">[[${aranzman.naziv}]]</h2>
+        </div>
+    </div>
+
+    <div class="card"> <!--CONTENT CARD-->
+        <div class="card-body pl-4 pr-5">
+            <div class="row mb-4"> <!-- Gornji row content -->
+                <div class="col-md-7">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <span class="d-block" style="font-size: 14px;">Cena</span>
+                            <span style="font-size: 28px;">[[${aranzman.cena}]]&#8364;</span>
+                        </div>
+
+                    <th:block th:if="${@putovanjeServiceImpl.daLiImaPopustaZaAranzman(aranzman.aranzmanId)}">
+                        <div class="col-md-2" th:with="minCenaPutovanja = ${@putovanjeServiceImpl.getNajmanjaCenaPutovanjaAranzmana(aranzman.aranzmanId)}">
+                            <span class="d-block" style="font-size: 14px;">Sada od</span>
+                            <span style="font-size: 28px;">[[${minCenaPutovanja}]]&#8364;</span>
+                        </div>
+                    </th:block>
+
+                        <div class="col-md-3">
+                            <span class="d-block" style="font-size: 14px;">Trajanje</span>
+                            <span style="font-size: 28px;">[[${aranzman.trajanjeDani}]]</span><span class="font-weight-bold" style="font-size: 16px;"> dana</span>
+                        </div>
+
+                        <div class="col-md-3">
+                            <span class="d-block" style="font-size: 14px;">Zahtevnost</span>
+                            <span class="font-weight-bold"  style="font-size: 28px;">[[${aranzman.zahtevnost}]]</span><span style="font-size: 16px;">/5</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col-md-5 d-flex justify-content-end align-items-center">
+                    <a href="#polasciSection" class="btn btn-success h-75" style="color: #fff; font-size: 20px;"><i class="fas fa-mountain"></i> Prijavi se</a>
+                </div>
+
+
+
+            </div> <!--Kraj Gornjeg row content -->
+
+            <div class="col-md-12 mb-4 bottomLine"></div>
+
+            <div class="col-md-7 mb-4">
+                <p class="text-muted" th:text="${aranzman.kratakOpis}"></p>
+            </div>
+            <div class="col-md-9">
+                <h2 class="mb-3">Opis putovanja</h2>
+                <div class="bottomLineWhite"></div>
+                <div th:utext="${aranzman.opis}"></div>
+                <div class="bottomLineWhite"></div>
+            </div>
+
+
+            <div class="col-md-9 mt-5">
+                <h2 class="mb-3">Plan i Program</h2>
+                <div class="bottomLineWhite"></div>
+                <div th:utext="${aranzman.planPuta}"></div>
+                <div class="bottomLineWhite"></div>
+            </div>
+
+            <div class="col-md-9 mt-5">
+                <h2 class="mb-3">Organizacija</h2>
+                <div class="bottomLineWhite"></div>
+                <div th:utext="${aranzman.organizacija}"></div>
+                <div class="bottomLineWhite"></div>
+            </div>
+
+            <section th:replace="fragments/pregledAranzmanaPolasciSection :: pregledAranzmanaPolasciSection1(aranzman=${aranzman}, listaPutovanja=${listaPutovanjaAvailableZaKorisnika})"></section>
+
+            <div class="col-md-12 mt-5">
+                <h2 class="mb-3">Galerija Slika</h2>
+                <div class="bottomLineWhite"></div>
+                <div class="row">
+                    <th:block th:each="slika : ${listaSlikaAranzmana}">
+                        <div class="col-sm-4 mb-4">
+                            <a th:href="@{${slika.getImagePath()}}" data-toggle="lightbox" data-gallery="example-gallery" class="mb-1">
+                                <img th:src="@{${slika.getImagePath()}}" class="img-fluid mb-2" style="object-fit: cover; width: 100%; height: 300px;">
+                            </a>
+                        </div>
+                    </th:block>
+                </div>
+                <div class="bottomLineWhite"></div>
+            </div>
+
+            <th:block th:if="${aranzman.napomene != null and !aranzman.napomene.isBlank()}">
+                <div class="col-md-9 mt-5">
+                    <h2 class="mb-3">Dodatne Napomene</h2>
+                    <div class="bottomLineWhite"></div>
+                    <div th:utext="${aranzman.napomene}"></div>
+                    <div class="bottomLineWhite"></div>
+                </div>
+            </th:block>
+
+        </div><!-- Kraj card-bodyja -->
+
+    </div>
+
+    <!--/* Footer fragment */-->
+    <div th:replace="fragments/footer :: footer2(brojTelefonaKluba=${klub.brojTelefona}, emailKluba=${klub.email})"></div>
+    <!--/* Footer fragment END */-->
+
+</div>
+
+
+
+
+
+
+<!-- Script Source Files -->
+
+<!-- jQuery -->
+<script th:src="@{/js/jquery-3.5.1.min.js}"></script>
+<!-- Popper JS -->
+<script th:src="@{/js/popper.min.js}"></script>
+<!-- Bootstrap 4.5 JS -->
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<!-- Font Awesome -->
+<script th:src="@{/js/all.js}"></script>
+<!--LightBox efekat za Galeriju slika -->
+<script th:src="@{/ekko-lightboxGallery/ekko-lightbox.js}"></script>
+
+<script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+
+<script>
+    $(document).on('click', '[data-toggle="lightbox"]', function(event) {
+        event.preventDefault();
+        $(this).ekkoLightbox();
+    });
+</script>
+
+</body>
+</html>

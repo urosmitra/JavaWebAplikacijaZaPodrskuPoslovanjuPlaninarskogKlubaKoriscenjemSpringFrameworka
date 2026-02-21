@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http//www.thymeleaf.org/extras/spring-security" lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <title>Planinarski klub "Summit Explorers"</title>
+
+    <!-- Bootstrap 4.5 CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <!-- reference CSS file -->
+    <link rel="stylesheet" th:href="@{/css/myStyle.css}">
+
+
+    <!--Font Awesome ikonice!-->
+    <link th:href="@{/fontAwesome/all.css}" rel="stylesheet"> <!--load all styles -->
+
+</head>
+<body class="bodyKorisnikBackground">
+
+<!-- Top Bar -->
+<div th:replace="fragments/topBar :: topBar1(brojTelefonaKluba=${klub.brojTelefona}, emailKluba=${klub.email})"></div>
+<!-- kraj Top Bara -->
+
+
+<!--Image Carousel -->
+<div id="carouselIndexPage" class="carousel slide container my-3" data-ride="carousel" data-interval="6000">
+
+    <ol class="carousel-indicators">
+        <li data-target="#carouselIndexPage" data-slide-to="0" class="active"></li>
+        <li data-target="#carouselIndexPage" data-slide-to="1"></li>
+        <li data-target="#carouselIndexPage" data-slide-to="2"></li>
+        <li data-target="#carouselIndexPage" data-slide-to="3"></li>
+    </ol>
+
+    <div class="carousel-inner">
+
+        <div class="carousel-item active">
+            <img th:src="@{/slikeOstalo/homeslider_1.jpg}" alt="HomeSlider Slika 1" class="d-block mx-auto h-auto homeSliderImg">
+        </div>
+        <div class="carousel-item">
+            <img th:src="@{/slikeOstalo/homeslider_2.jpg}" alt="HomeSlider Slika 2" class="d-block mx-auto h-auto homeSliderImg">
+        </div>
+        <div class="carousel-item">
+            <img th:src="@{/slikeOstalo/homeslider_3.jpg}" alt="HomeSlider Slika 3" class="d-block mx-auto h-auto homeSliderImg">
+        </div>
+        <div class="carousel-item">
+            <img th:src="@{/slikeOstalo/homeslider_4.jpg}" alt="HomeSlider Slika 4" class="d-block mx-auto h-auto homeSliderImg">
+        </div>
+
+
+    </div>
+
+
+</div>
+<!--Kraj Image Carousel-a -->
+<!-- Navigation bar fragment -->
+<div th:replace="fragments/navBar :: navBar1"></div>
+<!-- Navigation bar fragment END-->
+
+
+
+<div class="container">
+    <div class="col-12 mt-4 text-center mb-4">
+        <h2>Predstojeća Putovanja</h2>
+    </div>
+
+    <!--/* POVRATNE PORUKE */-->
+    <th:block th:if="${messageAranzmanFail}">
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <span th:text="${messageAranzmanFail}"></span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </th:block>
+    <!--/* KRAJ POVRATNE PORUKE */-->
+
+
+    <section id="sectionPredstojecaPutovanja">
+        <th:block th:if="${listaPredstojecihPutovanja != null and !listaPredstojecihPutovanja.isEmpty()}">
+            <div class="card" th:each="putovanje : ${listaPredstojecihPutovanja}" style="margin-bottom: 1.2rem;">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-1 pr-0 mr-2" style="padding-left: 0.7rem;">
+                            <span class="font-weight-bold d-block">Polazak</span>
+                            <span th:text="${#temporals.format(putovanje.datumVremePolaska, 'dd.MM.yyyy.')}"></span>
+                        </div>
+                        <div class="col-md-1 pr-0 mr-3" style="padding-left: 0.7rem;">
+                            <span class="font-weight-bold d-block">Povratak</span>
+                            <span th:text="${#temporals.format(putovanje.datumPovratka, 'dd.MM.yyyy.')}"></span>
+                        </div>
+                        <div class="col-md-1 ml-2">
+                            <span class="font-weight-bold d-block">Dana</span>
+                            <span>[[${putovanje.aranzman.trajanjeDani}]]</span>
+                        </div>
+                        <div class="col-md-3 pl-0">
+                            <h5 class="card-title">[[${putovanje.aranzman.naziv}]]</h5>
+                            <h6 class="card-subtitle text-muted">[[${putovanje.aranzman.kratakOpis}]]</h6>
+                        </div>
+                        <div class="col-md-2 pl-0 mr-3">
+                            <img th:src="@{${putovanje.aranzman.getThumbnailPhotoPath()}}" class="lazy card-img">
+                        </div>
+
+                        <div class="col-md-3 pr-0 pl-0">
+                            <div class="row" style="height: 80px;">
+                                <div class="col-md-3 pl-2 pr-2">
+                                    <span class="font-weight-bold d-block">Cena</span>
+                                    <span class="font-weight-bold">[[${putovanje.aranzman.cena}]]&#8364;</span>
+                                </div>
+
+                                <th:block th:if="${putovanje.popust != null and putovanje.popust != 0}">
+                                    <div class="col-md-3 pl-0 pr-1" th:with="cenaAranzmana = ${@putovanjeServiceImpl.cenaPutovanjaAranzmana(putovanje.aranzman.cena, putovanje.popust)}">
+                                        <span class="font-weight-bold d-block">Sada od</span>
+                                        <span class="font-weight-bold">[[${cenaAranzmana}]]&#8364;</span>
+                                    </div>
+                                </th:block>
+
+                                <div class="col-md-6 pl-2 pr-2">
+                                    <span class="font-weight-bold d-block">Vrsta Putovanja</span>
+                                    <span>[[${putovanje.aranzman.vrstaPutovanja.naziv}]]</span>
+                                </div>
+
+
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 pl-2">
+                                    <a th:href="@{'/pregledAranzmana/' + ${putovanje.aranzman.aranzmanId}}" class="btn btn-success btn-sm">Pogledaj</a>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div> <!-- Kraj card-body-ja -->
+            </div> <!-- Kraj Card-a -->
+        </th:block>
+
+        <div class="col-md-12 text-center">
+            <div class="button">
+                <button id="showMoreBtn">Prikaži više</button>
+            </div>
+        </div>
+
+    </section> <!--KRAJ Section predstojeca putovanja -->
+
+    <!--/* Footer fragment */-->
+    <div th:replace="fragments/footer :: footer2(brojTelefonaKluba=${klub.brojTelefona}, emailKluba=${klub.email})"></div>
+    <!--/* Footer fragment END */-->
+
+</div>
+
+
+
+
+
+
+<!-- Script Source Files -->
+
+<!-- jQuery -->
+<script th:src="@{/js/jquery-3.5.1.min.js}"></script>
+<!-- Popper JS -->
+<script th:src="@{/js/popper.min.js}"></script>
+<!-- Bootstrap 4.5 JS -->
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<!-- Font Awesome -->
+<script th:src="@{/js/all.js}"></script>
+<!-- jQuery lazyload za "load more" button -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js" integrity="sha512-jNDtFf7qgU0eH/+Z42FG4fw3w7DM/9zbgNPe3wfJlCylVDTT3IgKW5r92Vy9IHa6U50vyMz5gRByIu4YIXFtaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script type="text/javascript" th:inline="javascript">
+
+    $(document).ready(function (){
+        if($("#sectionPredstojecaPutovanja .card:hidden").length == 0){
+            document.getElementById('showMoreBtn').style.display = "none";
+        }
+    });
+
+    $("#showMoreBtn").click(function(){
+        $("#sectionPredstojecaPutovanja .card:hidden").slice(0,3).slideDown();
+        if($("#sectionPredstojecaPutovanja .card:hidden").length == 0){
+            $("#showMoreBtn").fadeOut("slow");
+        }
+    });
+</script>
+
+<script>
+    $(function(){
+        $("img.lazy").lazyload();
+    });
+</script>
+
+
+</body>
+</html>

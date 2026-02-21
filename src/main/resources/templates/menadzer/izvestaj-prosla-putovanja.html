@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <title>Planinarski klub "Summit Explorers"</title>
+
+    <!-- Bootstrap 4.5 CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <!-- reference CSS file -->
+    <link rel="stylesheet" th:href="@{/css/myStyle.css}">
+
+    <!--Font Awesome ikonice!-->
+    <link th:href="@{/fontAwesome/all.css}" rel="stylesheet">
+    <!--load all styles -->
+</head>
+<body>
+<!-- Navigation bar fragment -->
+<div th:replace="fragments/navBar :: navBar1"></div>
+<!-- Navigation bar fragment END-->
+
+<div class="container" style="min-height: 30rem;">
+    <div class="row ml-0 mt-2 mb-3">
+        <h1>Izveštaji Prošlih Putovanja</h1>
+    </div>
+
+    <th:block th:if="${listaProslihPutovanjaIzvestaja == null or listaProslihPutovanjaIzvestaja.isEmpty()}">
+        <h2>Nema nijednog zabeleženog prošlog putovanja u bazi podataka.</h2>
+    </th:block>
+
+    <th:block th:if="${listaProslihPutovanjaIzvestaja != null and !listaProslihPutovanjaIzvestaja.isEmpty()}">
+        <table id="tabelaProslihPutovanjaIzvestaja" class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>
+                        <a th:href="@{'/manager/izvestajProslaPutovanja/page/' + ${currentPage} + '?sortField=putovanjeId&sortDir=' + ${reverseSortDir}}">
+                            ID
+                        </a>
+                    </th>
+                    <th>
+                        <a th:href="@{'/manager/izvestajProslaPutovanja/page/' + ${currentPage} + '?sortField=nazivPutovanja&sortDir=' + ${reverseSortDir}}">
+                            Naziv
+                        </a>
+                    </th>
+                    <th>
+                        <a th:href="@{'/manager/izvestajProslaPutovanja/page/' + ${currentPage} + '?sortField=datumVremePolaska&sortDir=' + ${reverseSortDir}}">
+                            Datum Vreme Polaska
+                        </a>
+                    </th>
+                    <th>
+                        <a th:href="@{'/manager/izvestajProslaPutovanja/page/' + ${currentPage} + '?sortField=datumPovratka&sortDir=' + ${reverseSortDir}}">
+                            Datum Povratka
+                        </a>
+                    </th>
+                    <th>
+                        <a th:href="@{'/manager/izvestajProslaPutovanja/page/' + ${currentPage} + '?sortField=brojPutnika&sortDir=' + ${reverseSortDir}}">
+                            Broj Putnika
+                        </a>
+                    </th>
+                    <th>
+                        <a th:href="@{'/manager/izvestajProslaPutovanja/page/' + ${currentPage} + '?sortField=status&sortDir=' + ${reverseSortDir}}">
+                            Status
+                        </a>
+                    </th>
+                    <th>
+                        <a th:href="@{'/manager/izvestajProslaPutovanja/page/' + ${currentPage} + '?sortField=prosecnaZaradaPoPutniku&sortDir=' + ${reverseSortDir}}">
+                            Prosek Zarade po Putniku
+                        </a>
+                    </th>
+                    <th>
+                        <a th:href="@{'/manager/izvestajProslaPutovanja/page/' + ${currentPage} + '?sortField=ukupnaZarada&sortDir=' + ${reverseSortDir}}">
+                            Ukupna Zarada
+                        </a>
+                    </th>
+                    <th>
+                        <a th:href="@{'/manager/izvestajProslaPutovanja/page/' + ${currentPage} + '?sortField=popunjenostPutovanja&sortDir=' + ${reverseSortDir}}">
+                            Popunjenost Putovanja
+                        </a>
+                    </th>
+                    <th>
+                        <a th:href="@{'/manager/izvestajProslaPutovanja/page/' + ${currentPage} + '?sortField=izvestaj&sortDir=' + ${reverseSortDir}}">
+                            Izveštaj
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody th:id="bodyTableProslaPutovanjaIzvestaji">
+                <tr th:each="prosloPutovanje : ${listaProslihPutovanjaIzvestaja}">
+                    <td th:text="${prosloPutovanje.putovanjeId}"></td>
+                    <td th:text="${prosloPutovanje.nazivPutovanja}"></td>
+                    <td th:text="${#temporals.format(prosloPutovanje.datumVremePolaska, 'dd.MM.yyyy. HH:mm')}"></td>
+                    <td th:text="${#temporals.format(prosloPutovanje.datumPovratka, 'dd.MM.yyyy')}"></td>
+                    <td th:text="${prosloPutovanje.brojPutnika}"></td>
+                    <td th:text="${prosloPutovanje.status.name()}"></td>
+                    <th:block th:if="${prosloPutovanje.prosecnaZaradaPoPutniku != null}">
+                        <td th:text="${prosloPutovanje.prosecnaZaradaPoPutniku} + '&#8364;'"></td>
+                    </th:block>
+
+                    <th:block th:unless="${prosloPutovanje.prosecnaZaradaPoPutniku != null}">
+                        <td style="color: red;" class="font-weight-bolder">0&#8364;</td>
+                    </th:block>
+                    <th:block th:if="${prosloPutovanje.ukupnaZarada != null}">
+                        <td th:text="${prosloPutovanje.ukupnaZarada + '&#8364;'}"></td>
+                    </th:block>
+                    <th:block th:unless="${prosloPutovanje.ukupnaZarada != null}">
+                        <td style="color: red;" class="font-weight-bolder">0&#8364;</td>
+                    </th:block>
+                    <td>[[${prosloPutovanje.popunjenostPutovanja}]]%</td>
+                    <th:block th:if="${prosloPutovanje.izvestaj != null}">
+                        <td>
+                            <a th:href="@{/manager/proslo-putovanje/izvestaj(putovanjeId=${prosloPutovanje.putovanjeId})}" class="btn btn-secondary btn-sm">Pogledaj Izveštaj (putovanje ID: <span class="font-weight-bolder">[[${prosloPutovanje.putovanjeId}]]</span>)</a>
+                        </td>
+                    </th:block>
+                    <th:block th:unless="${prosloPutovanje.izvestaj != null}">
+                        <td>
+                            <span class="font-weight-bolder">Nema izveštaja za putovanje (ID: [[${prosloPutovanje.putovanjeId}]])</span>
+                        </td>
+                    </th:block>
+                </tr>
+            </tbody>
+        </table>
+
+
+        <!--/* PAGINACIJA */-->
+        <th:block th:if="${totalPages > 1}">
+            <div class="row col-md-10">
+                <div class="col-md-3">
+                    Ukupan broj putovanja:  <span class="font-weight-bolder">[[${totalItems}]]</span>
+                </div>
+                <div class="col-md-4">
+                    <th:block th:each="i : ${#numbers.sequence(1, totalPages)}">
+                        <a th:if="${currentPage != i}" th:href="@{'/manager/izvestajProslaPutovanja/page/' + ${i} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">[[${i}]]</a>
+                        <span th:unless="${currentPage != i}">[[${i}]]</span> &nbsp; &nbsp;
+                    </th:block>
+                </div>
+                <div class="col-md-1">
+                    <a th:if="${currentPage < totalPages}" th:href="@{'/manager/izvestajProslaPutovanja/page/' + ${currentPage + 1} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">Next</a>
+                    <span th:unless="${currentPage < totalPages}">Next</span>
+                </div>
+                <div class="col-md-1">
+                    <a th:if="${currentPage < totalPages}" th:href="@{'/manager/izvestajProslaPutovanja/page/' + ${totalPages} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">Last</a>
+                    <span th:unless="${currentPage < totalPages}">Last</span>
+                </div>
+            </div>
+        </th:block>
+        <!--/* KRAJ paginacije */-->
+
+    </th:block>
+    <div class="row" style="height: 2rem;"></div>
+
+</div>
+
+<!--/* Footer fragment */-->
+<div class="container">
+    <div th:replace="fragments/footer :: footer1"></div>
+</div>
+<!--/* Footer fragment END */-->
+
+
+
+<!-- Script Source Files -->
+
+<!-- jQuery -->
+<script th:src="@{/js/jquery-3.5.1.min.js}"></script>
+<!-- Popper JS -->
+<script th:src="@{/js/popper.min.js}"></script>
+<!-- Bootstrap 4.5 JS -->
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<!-- Font Awesome -->
+<script th:src="@{/js/all.js}"></script>
+</body>
+</html>

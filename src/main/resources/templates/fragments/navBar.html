@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http//www.thymeleaf.org/extras/spring-security" lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div th:fragment="navBar1">
+    <nav class="navbar bg-light navbar-light navbar-expand-lg">
+        <div class="container">
+
+            <!--Brend link u zavisnosti od uloge korisnika -->
+            <th:block sec:authorize="hasAuthority('ADMIN')">
+                <a class="navbar-brand mb-0 h1" th:href="@{/admin/listaKorisnika}">Summit Explorers</a>
+            </th:block>
+
+            <th:block sec:authorize="hasAuthority('KORISNIK') or isAnonymous()">
+                <a class="navbar-brand mb-0 h1" th:href="@{/index}">Summit Explorers</a>
+            </th:block>
+
+            <th:block sec:authorize="hasAuthority('MENADZER')">
+                <a class="navbar-brand mb-0 h1" th:href="@{/manager/listaProizvoda}">Summit Explorers</a>
+            </th:block>
+            <!--Brend link u zavisnosti od uloge korisnika KRAJ -->
+
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive1">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarResponsive1">
+                <ul class="navbar-nav mr-auto">
+                    <!-- ml-auto umesto mr-auto je ako hoces da ti budu sa desne strane linkovi, mx-auto je ako oces u centru da budu -->
+
+                    <th:block sec:authorize="hasAuthority('ADMIN')">
+                        <li class="nav-item">
+                            <a class="nav-link active" th:href="@{/admin/listaKorisnika}">Korisnici <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/admin/listaAranzmana}" href="#">Aranžmani</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/admin/listaVrstePutovanja}" href="#">Vrste Putovanja</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/admin/listaProizvoda}">Proizvodi</a>
+                        </li>
+                    </th:block>
+
+                    <th:block sec:authorize="hasAuthority('KORISNIK') or isAnonymous()">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="vrstePutovanjaDropDown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Vrste Putovanja
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="vrstePutovanjaDropDown"
+                             th:with="listaVrstePutovanja = ${@vrstaPutovanjaServiceImpl.getAllVrstePutovanja()}">
+                                <th:block th:each="vrstaPutovanja : ${listaVrstePutovanja}">
+                                    <a class="dropdown-item" th:href="@{'/vrstaPutovanja/' + ${vrstaPutovanja.vrstaPutovanjaId}}">[[${vrstaPutovanja.naziv}]]</a>
+                                </th:block>
+                            </div>
+                        </li>
+
+                        <li class="nav-item ml-2">
+                            <a class="nav-link" th:href="@{/prodavnica}">Online Prodavnica</a>
+                        </li>
+
+                    </th:block>
+
+                    <th:block sec:authorize="hasAuthority('MENADZER')">
+                        <li class="nav-item">
+                            <a class="nav-link active" th:href="@{/manager/listaProizvoda}">Proizvodi <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="izvestajPutovanjaDropDown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Putovanja
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="izvestajPutovanjaDropDown">
+                                <a class="dropdown-item" th:href="@{/manager/izvestajBuducaPutovanja}">Buduća Putovanja</a>
+                                <a class="dropdown-item" th:href="@{/manager/izvestajProslaPutovanja}">Prošla Putovanja</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#">Something else here</a>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/manager/aranzmani}" href="#">Aranžmani</a>
+                        </li>
+                    </th:block>
+
+
+
+
+                </ul>
+                <ul class="navbar-nav ml-auto"> <!--/* Nav Linkovi sa desne strane navbar-a */-->
+
+                    <th:block sec:authorize="hasAuthority('KORISNIK')">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/korisnik/shopping-cart}">Vaša Korpa</a>
+                        </li>
+                    </th:block>
+
+                    <th:block sec:authorize="isAuthenticated()">
+                        <li class="nav-item">
+                            <span class="nav-link" sec:authentication="name"></span>
+                        </li>
+                        <li class="nav-item">
+                            <form th:action="@{/perform_logout}" method="post">
+                                <button class="btn nav-link" type="submit">Odjavi se</button>
+                            </form>
+                        </li>
+
+                    </th:block>
+
+                    <!-- Za Gosta aplikacije -->
+                    <th:block sec:authorize="!isAuthenticated()">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/loginPage}">Prijavi se</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/registracija}">Registruj se</a>
+                        </li>
+                    </th:block>
+
+
+
+                </ul>
+
+            </div>
+
+        </div>
+    </nav>
+</div> <!--KRAJ  fragmenta navBar1 -->
+
+</body>
+</html>

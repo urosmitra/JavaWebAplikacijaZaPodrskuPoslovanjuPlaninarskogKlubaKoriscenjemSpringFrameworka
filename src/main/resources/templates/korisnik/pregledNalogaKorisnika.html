@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <title>Planinarski klub "Summit Explorers"</title>
+
+    <!-- Bootstrap 4.5 CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <!-- reference CSS file -->
+    <link rel="stylesheet" th:href="@{/css/myStyle.css}">
+
+
+    <!--Font Awesome ikonice!-->
+    <link th:href="@{/fontAwesome/all.css}" rel="stylesheet"> <!--load all styles -->
+</head>
+<body class="bodyKorisnikBackground">
+
+<!-- Top Bar -->
+<div th:replace="fragments/topBar :: topBar1(brojTelefonaKluba=${klub.brojTelefona}, emailKluba=${klub.email})"></div>
+<!-- kraj Top Bara -->
+
+
+<!-- Navigation bar fragment -->
+<div th:replace="fragments/navBar :: navBar1"></div>
+<!-- Navigation bar fragment END-->
+
+
+<div class="container" style="background-color: #fff; padding-left: 4rem;">
+
+    <div class="col" style="height: 2rem;"></div>
+
+    <div class="col-md-12 mb-4">
+        <h2>Pregled Naloga</h2>
+    </div>
+
+    <!--/*  POVRATNE PORUKE */-->
+    <th:block th:if="${porukaEditSuccess}">
+        <div class="alert alert-success alert-dismissible fade show ml-3 col-md-7 mb-2" role="alert">
+            <span class="font-weight-bolder">[[${porukaEditSuccess}]]</span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </th:block>
+
+    <th:block th:if="${passwordChanged}">
+        <div class="alert alert-success alert-dismissible fade show ml-3 col-md-7 mb-2" role="alert">
+            <span><i class="fas fa-check-circle"></i> Uspešno ste promenili password! Tokom sledeće prijave koristite novi password.</span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </th:block>
+    <!--/* KRAJ POVRATNIH PORUKA */-->
+
+    <div class="col-md-8 mb-3" style="font-size: 20px;">
+        <div class="mb-3">
+            <label for="korisnikId">ID:</label>
+            <span id="korisnikId" class="font-weight-bolder">[[${korisnik.korisnikId}]]</span>
+        </div>
+        <div class="mb-3">
+            <label for="imePrezime">Ime i Prezime:</label>
+            <span id="imePrezime" class="font-weight-bolder">[[${korisnik.ime}]] [[${korisnik.prezime}]]</span>
+        </div>
+        <div class="mb-3">
+            <label for="email">Email:</label>
+            <span id="email" class="font-weight-bolder">[[${korisnik.email}]]</span>
+        </div>
+        <div class="mb-3">
+            <label for="brojTelefona">Broj Telefona:</label>
+            <span id="brojTelefona" class="font-weight-bolder">[[${korisnik.brojTelefona}]]</span>
+        </div>
+        <div class="mb-3">
+            <label for="bodoviClanKart">Bodovi na članskoj kartici:</label>
+            <span id="bodoviClanKart" class="font-weight-bolder">[[${clanskaKarticaKorisnika.brojBodova}]]</span>
+        </div>
+        <div class="mb-3">
+            <label for="statusClanKart">Status članske kartice:</label>
+            <span id="statusClanKart" class="font-weight-bolder">[[${clanskaKarticaKorisnika.status}]]</span>
+        </div>
+        <div class="mb-3">
+            <a th:href="@{/korisnik/editAcc(korisnikId=${korisnik.korisnikId})}" class="btn btn-outline-warning">Izmeni lične podatke</a>
+            <a th:href="@{/korisnik/editAccChangePass(korisnikId=${korisnik.korisnikId})}" class="btn btn-outline-secondary">Promena lozinke</a>
+        </div>
+    </div>
+
+
+
+    <div class="col" style="height: 2rem;"></div>
+</div>
+
+<div class="container px-0">
+    <!--/* Footer fragment */-->
+    <div th:replace="fragments/footer :: footer2(brojTelefonaKluba=${klub.brojTelefona}, emailKluba=${klub.email})"></div>
+    <!--/* Footer fragment END */-->
+</div>
+
+
+
+
+<!-- Script Source Files -->
+
+<!-- jQuery -->
+<script th:src="@{/js/jquery-3.5.1.min.js}"></script>
+<!-- Popper JS -->
+<script th:src="@{/js/popper.min.js}"></script>
+<!-- Bootstrap 4.5 JS -->
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<!-- Font Awesome -->
+<script th:src="@{/js/all.js}"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http//www.thymeleaf.org/extras/spring-security" lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<section th:fragment="pregledNarudzbenicaKorisnika1(sectionId, listaNarudzbenica, nemaPorudzbinaPoruka)" class="px-4 mb-5" th:id="${sectionId}">
+    <th:block th:if="${listaNarudzbenica != null and !listaNarudzbenica.isEmpty()}">
+
+        <div class="row mb-4" th:each="narudzbenica : ${listaNarudzbenica}">
+            <div class="col-md-12 mb-3">
+                <h5>Porudžbina kreirana datuma: <span class="font-weight-bolder" th:text="${#temporals.format(narudzbenica.datumVreme, 'EEEE, dd.MM.yyyy.')}"></span> u <span class="font-weight-bolder" th:text="${#temporals.format(narudzbenica.datumVreme, 'HH:mm')}"></span></h5>
+            </div>
+            <div class="col-md-5">
+                <p class="lead">ID porudžbine: <b>[[${narudzbenica.narudzbenicaId}]]</b></p>
+                <p>Adresa za Isporuku: <b th:text="${narudzbenica.adresaZaIsporuku + ', ' + narudzbenica.grad + ', ' + narudzbenica.zipCode}"></b></p>
+                <p>Ukupna Cena: <b style="font-size: 17px;" th:text="${narudzbenica.totalCena + '&#8364;'}"></b> + dostava u iznosu od <b>250 dinara</b>.</p>
+            </div>
+            <div class="col-md-5" th:with="stavkeNarudzbenice = ${@stavkaNarudzbeniceServiceImpl.findAllByNarudzbenica(narudzbenica)}">
+                <p class="lead">Poručeni proizvodi:</p>
+                <ul>
+                    <li th:each="stavkaNar : ${stavkeNarudzbenice}">[[${stavkaNar.proizvod.naziv}]] (Količina: <b>[[${stavkaNar.izabranaKolicina}]]</b>, Ukupna Cena: <b>[[${stavkaNar.ukupnaCenaStavke}]]&#8364;</b>)</li>
+                </ul>
+            </div>
+            <div class="col-md-2">
+
+            </div>
+            <div class="col-md-12 bottomLineWhite"></div>
+        </div>
+
+
+    </th:block>
+
+    <th:block th:if="${listaNarudzbenica == null or listaNarudzbenica.isEmpty()}">
+        <h5>[[${nemaPorudzbinaPoruka}]] Idite na <a th:href="@{/prodavnica}">prodavnicu</a> da pogledate šta ima u ponudi.</h5>
+    </th:block>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http//www.thymeleaf.org/extras/spring-security" lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<title>Planinarski klub "Summit Explorers"</title>
+
+<!-- Bootstrap 4.5 CSS -->
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+
+    <!--Splide css za slike proizvoda slider -->
+    <link rel="stylesheet" th:href="@{/css/splide-skyblue.min.css}">
+
+<!-- reference CSS file -->
+<link rel="stylesheet" th:href="@{/css/myStyle.css}">
+
+
+<!--load all styles -->
+<!--Font Awesome ikonice!-->
+<link th:href="@{/fontAwesome/all.css}" rel="stylesheet">
+
+
+
+<!--LightBox efekat za Thumbnail fotografiju -->
+<link rel="stylesheet" th:href="@{/ekko-lightBoxGallery/ekko-lightbox.css}">
+
+</head>
+<body class="bodyKorisnikBackground">
+
+<!-- Top Bar -->
+<div th:replace="fragments/topBar :: topBar1(brojTelefonaKluba=${klub.brojTelefona}, emailKluba=${klub.email})"></div>
+<!-- kraj Top Bara -->
+
+<!-- Navigation bar fragment -->
+<div th:replace="fragments/navBar :: navBar1"></div>
+<!-- Navigation bar fragment END-->
+
+<div class="container" style="background-color: #fff;">
+    <div class="col-md-12" style="height: 2rem;">
+    </div>
+
+    <div class="row mb-3">
+
+        <div class="col-md-6">
+            <!--<img class="img-fluid w-100" th:src="@{${proizvod.getThumbnailPhotoPath()}}" th:alt="${'Slika proizvoda: ' + proizvod.naziv}" style="object-fit: cover; height: 500px;"> -->
+
+
+            <div id="main-slider" class="splide mb-3">
+                <div class="splide__track">
+                    <ul class="splide__list">
+                        <li class="splide__slide">
+                            <img class="img-fluid" th:src="@{${proizvod.getThumbnailPhotoPath()}}" th:alt="${'Slika proizvoda: ' + proizvod.naziv}">
+                        </li>
+                        <li class="splide__slide" th:each="slikaProizv : ${listaSlikaProizvoda}">
+                            <img class="img-fluid" th:src="@{${slikaProizv.getImagePath()}}" th:alt="${'Slika proizvoda: ' + proizvod.naziv}">
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="thumbnail-slider" class="splide">
+                <div class="splide__track">
+                    <ul class="splide__list">
+                        <li class="splide__slide">
+                            <img class="img-fluid slikaProizvodDonjiSlajder" th:src="@{${proizvod.getThumbnailPhotoPath()}}" th:alt="${'Slika proizvoda: ' + proizvod.naziv}">
+                        </li>
+                        <li class="splide__slide" th:each="slikaProizv : ${listaSlikaProizvoda}">
+                            <img class="img-fluid slikaProizvodDonjiSlajder" th:src="@{${slikaProizv.getImagePath()}}" th:alt="${'Slika proizvoda: ' + proizvod.naziv}">
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+
+        </div>
+
+
+        <div class="col-md-6 pl-4" style="padding-right: 2rem;">
+            <div class="row">
+                <div class="col-md-12 d-block">
+                    <h4 id="h4NazivProizvoda" class="mb-5">[[${proizvod.naziv}]]</h4>
+                </div>
+
+                <!--TO-DO: SLEDECE - dodati div col-md-12 za vrstu proizvoda -->
+                <th:block th:if="${proizvod.vrstaProizvoda != null}">
+                    <script type="text/javascript" th:inline="javascript">
+                        let nazivProizvoda = document.getElementById("h4NazivProizvoda");
+                        nazivProizvoda.classList.remove("mb-5");
+                        nazivProizvoda.classList.add("mb-3");
+                    </script>
+                    <div class="col-md-12 d-flex justify-content-start mb-5">
+                        <span class="text-muted font-weight-bolder">Vrsta proizvoda: [[${proizvod.vrstaProizvoda.naziv}]]</span>
+                    </div>
+                </th:block>
+
+
+
+                <!-- Cena Proizvoda i popust ako ima -->
+                <div class="col-md-12 d-flex justify-content-start" style="margin-bottom: 1.8rem;">
+                    <th:block th:if="${proizvod.popust != 0}">
+                        <div style="position: relative; margin-right: 0.8rem;">
+                            <span class="font-weight-bolder d-block pl-2 pr-2" style="background-color: #e4ce21; font-size: 20px;">[[${proizvod.cena}]]&#8364;</span>
+                            <i class="fa fa-slash redSlash4"></i>
+                        </div>
+                    </th:block>
+                    <th:block th:if="${proizvod.popust == 0}">
+                        <span class="font-weight-bolder d-block pl-2 pr-2" style="background-color: #e4ce21; font-size: 20px;">[[${proizvod.cena}]]&#8364;</span>
+                    </th:block>
+                    <th:block th:if="${proizvod.popust != 0}">
+                        <div th:with="cenaSaPopustom = ${@proizvodServiceImpl.getCenaProizvodaSaPopustom(proizvod)}">
+                            <span class="font-weight-bolder d-block pl-2 pr-2" style="background-color: #1fcb36; font-size: 20px;">[[${cenaSaPopustom}]] &#8364;</span>
+                        </div>
+                    </th:block>
+                </div>
+                <!-- KRAJ Cena Proizvoda i popust ako ima -->
+
+                <!-- Ima na Stanju ili Nema na Stanju Labeli -->
+                <div class="col-md-12 d-flex justify-content-start mb-3" th:with="naStanju = ${@proizvodServiceImpl.daLiImaNaStanju(proizvod)}">
+                    <th:block th:if="${naStanju}">
+                        <span class="font-weight-bolder" style="color: #1e7e34;"><i class="fas fa-check"></i> Na Stanju</span>
+                        <th:block th:if="${proizvod.kolicina < 10}">
+                            <span class="font-weight-bolder ml-3" style="color: #d9a625"><i class="fas fa-exclamation-circle"></i> Poslednji Komadi</span>
+                        </th:block>
+                    </th:block>
+                    <th:block th:if="${!naStanju}">
+                        <span class="font-weight-bolder" style="color: red;"><i class="fas fa-times"></i> Trenutno Nema na Stanju</span>
+                    </th:block>
+                </div>
+                <!--KRAJ Ima na Stanju ili Nema na Stanju Labeli -->
+
+                <div class="col-md-12 d-flex justify-content-start"> <!-- Wrapper za dodavanje proizvoda u korpu -->
+                    <form action="#" th:action="@{/korisnik/korpaStavke/addNew}" th:object="${novaStavkaKorpe}" method="POST" class="col-md-12 pl-0">
+                        <!--HIDDEN POLJA PRENOS ZA STAVKU KORPE -->
+                        <input type="hidden" th:field="*{stavkaKorpeId}">
+
+                        <!--Odabir kolicine za ubacivanje u korpu -->
+                        <div class="form-group col-md-5 pl-0">
+                            <label for="izabranaKolicina">Izaberite Količinu:</label>
+                            <select id="izabranaKolicina" name="izabranaKolicina" class="form-control ml-0" required th:errorclass="fieldError"
+                            th:with="listaBrojevaKolicine = ${@proizvodServiceImpl.napuniBrojUKoliciniDropDown(proizvod)}">
+                                <option value="">---Količina---</option>
+                                <option th:each="broj : ${listaBrojevaKolicine}" th:value="${broj}" th:text="${broj}"></option>
+                            </select>
+                            <ul th:if="${#fields.hasErrors('izabranaKolicina')}">
+                                <li th:each="err : ${#fields.errors('izabranaKolicina')}" th:text="${err}" class="errorMsg"></li>
+                            </ul>
+                        </div>
+                        <!--KRAJ Odabira kolicine za ubacivanje u korpu -->
+
+
+                        <input type="hidden" th:field="*{proizvod}">
+                        <th:block th:if="${korisnik}">
+                            <input type="hidden" id="korisnik" name="korisnik" th:value="${korisnik.korisnikId}">
+                        </th:block>
+
+                        <!--BUTTON ZA DODAVANJE U KORPU-->
+                        <th:block sec:authorize="hasAuthority('KORISNIK')" th:with="naStanju = ${@proizvodServiceImpl.daLiImaNaStanju(proizvod)}">
+                            <th:block th:if="${naStanju}">
+                                <input type="submit" class="btn btn-warning mb-2" value="DODAJ U KORPU" name="btnDodajUKorpu">
+                            </th:block>
+                            <th:block th:if="${!naStanju}">
+                                <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom" title="Trenutno ovog proizvoda nema na stanju!">
+                                    <input type="submit" style="pointer-events: none;" value="DODAJ U KORPU" class="btn btn-warning mb-2" disabled name="btnDodajUKorpu">
+                                </span>
+                            </th:block>
+
+                        </th:block>
+
+                        <th:block sec:authorize="isAnonymous()">
+                            <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom" title="Morate se ulogovati da biste dodali proizvod u korpu!">
+                                <input type="submit" style="pointer-events: none;" value="DODAJ U KORPU" class="btn btn-warning mb-2" disabled name="btnDodajUKorpu">
+                            </span>
+                        </th:block>
+                        <!--KRAJ BUTTON-A ZA DODAVANJE U KORPU-->
+
+                        <!-- POVRATNE PORUKE-->
+                        <th:block th:if="${maksBrojKolicineUKorpi}">
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <span><i class="fas fa-exclamation font-weight-bolder" style="font-size: 20px;"></i> Već ste dodali maksimalnu količinu ovog proizvoda u korpu (10).</span>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </th:block>
+                        <th:block th:if="${stavkaKorpePostoji}">
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <span><i class="fas fa-exclamation font-weight-bolder" style="font-size: 20px;"></i> Ovaj proizvod već postoji u korpi. Dodata količina: <b>[[${dodataKolicina}]]</b>.</span>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </th:block>
+                        <th:block th:if="${novaStavkaKorpeDodata}">
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <span><i class="fas fa-exclamation font-weight-bolder" style="font-size: 20px;"></i> Uspešno ste dodali novi proizvod u korpu! Dodata količina: <b>[[${dodataKolicina}]]</b>.</span>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </th:block>
+                        <!--KRAJ POVRATNIH PORUKE-->
+
+
+                    </form>
+                </div><!-- KRAJ Wrappera za dodavanje proizvoda u korpu -->
+
+
+            </div>
+        </div>
+
+    </div><!--KRAJ gornjeg row-a za sliku i dodavanje u shopping cart-->
+
+    <div class="row"> <!-- OPIS PROIZVODA I TEHNICKE INFO -->
+        <div class="col-md-12">
+            <div class="bottomLineWhite"></div>
+        </div>
+
+        <div class="col-md-12">
+            <h3 class="mb-3">Opis Proizvoda</h3>
+            <div th:utext="${proizvod.opis}"></div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="bottomLineWhite"></div>
+        </div>
+
+        <div class="col-md-12">
+            <h3 class="mb-3">Tehničke Informacije</h3>
+            <div th:utext="${proizvod.tehnickeInfo}"></div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="bottomLineWhite"></div>
+        </div>
+
+    </div><!-- KRAJ OPIS PROIZVODA I TEHNICKE INFO -->
+
+    <!--/* Footer fragment */-->
+    <div th:replace="fragments/footer :: footer2(brojTelefonaKluba=${klub.brojTelefona}, emailKluba=${klub.email})"></div>
+    <!--/* Footer fragment END */-->
+
+</div>
+
+
+
+
+<!-- Script Source Files -->
+
+<!-- jQuery -->
+<script th:src="@{/js/jquery-3.5.1.min.js}"></script>
+<!-- Popper JS -->
+<script th:src="@{/js/popper.min.js}"></script>
+<!-- Bootstrap 4.5 JS -->
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<!-- Font Awesome -->
+<script th:src="@{/js/all.js}"></script>
+<!-- Splide JS za proizvod slike slider -->
+<script th:src="@{/js/splide.min.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+    $(document).ready(function (){
+
+        //enable tooltip on page
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        });
+
+
+        let kolicinaProizvoda = [[${proizvod.kolicina}]];
+
+        let kolicinaDropDown = document.getElementById("izabranaKolicina");
+
+        if(kolicinaProizvoda == 0){
+            // treba da za select stavimo disabled
+            kolicinaDropDown.setAttribute("disabled", "disabled");
+
+            // $("#izabranaKolicina").tooltip({
+            //     placement: 'right',
+            //     title: 'Trenutno ovog proizvoda nema na stanju',
+            //     delay: { "show": 500, "hide": 100 }
+            //  });
+        }
+     });
+
+    document.addEventListener( 'DOMContentLoaded', function () {
+
+        let main = new Splide( '#main-slider', {
+            fixedHeight : 500,
+            type       : 'fade',
+            cover      : true,
+            rewind     : true,
+            pagination : false,
+            heightRatio: 0.5,
+            arrows     : false,
+        } );
+
+        let thumbnails = new Splide( '#thumbnail-slider', {
+            fixedWidth: 100,
+            fixedHeight : 80,
+            gap       : 10,
+            rewind    : true,
+            pagination: false,
+            cover     : true,
+            isNavigation: true,
+            arrows      : 'slider',
+            breakpoints: {
+                600: {
+                    fixedWidth : 60,
+                    fixedHeight: 44,
+                },
+            },
+        } );
+
+        main.sync(thumbnails);
+        main.mount();
+        thumbnails.mount();
+
+    } );
+</script>
+
+<!--LightBox efekat za Galeriju slika -->
+<script th:src="@{/ekko-lightboxGallery/ekko-lightbox.js}"></script>
+
+<script>
+    $(document).on('click', '[data-toggle="lightbox"]', function(event) {
+        event.preventDefault();
+        $(this).ekkoLightbox();
+    });
+
+</script>
+
+</body>
+</html>

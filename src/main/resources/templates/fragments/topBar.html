@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http//www.thymeleaf.org/extras/spring-security" lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div th:fragment="topBar1(brojTelefonaKluba, emailKluba)" class="top-bar">
+    <div class="container">
+        <div class="col-12">
+            <a th:href="@{'tel:' + ${brojTelefonaKluba}}"><i class="fas fa-phone-square-alt"></i> +381 11 2096 777</a>
+            <span style="color:#cdd3d9!important;" class="ml-1 mr-4">Otvara se u 09:00</span>
+            <a th:href="@{'mailto:' + ${emailKluba}}"><i class="fas fa-envelope-open"></i> [[${klub.email}]]</a>
+
+            <th:block sec:authorize="isAuthenticated()">
+                    <div class="dropdown" style="float: right;">
+                        <a class="btn-link dropdown-toggle" href="#" role="button" id="dropDownMenuProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user-circle"></i><span class="pl-1" sec:authentication="name"></span>
+                        </a>
+                        <div class="dropdown-menu text-center dropdown-menu-right"  aria-labelledby="dropDownMenuProfile">
+                            <a class="dropdown-item text-dark" style="font-size: 14px;" th:href="@{/korisnik/pregledNaloga}">Pregled Naloga</a>
+                            <a class="dropdown-item text-dark" style="font-size: 14px;" th:href="@{/korisnik/pregledRezervacija}">Vaše Rezervacije</a>
+                            <a class="dropdown-item text-dark" style="font-size: 14px;" th:href="@{/korisnik/pregled-porudzbina}">Vaše Porudžbine</a>
+                        </div>
+                    </div>
+            </th:block>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org" lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div class="modal fade" th:fragment="clanskaKartModalFragment(korisnik)" id="clanskaKarticaModal" th:attrappend="id=${korisnik.korisnikId}"><!--modal begin-->
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" th:text="'Podaci članske kartice za korisnika ' + ${korisnik.ime} + ' ' + ${korisnik.prezime} + ' (' + ${korisnik.email} + ')'"></h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row d-flex h-100"><!-- d-flex ovde ne mora zato sto je row klasa vec koristi flexbox pozicioniranje -->
+                    <div class="col-12 justify-content-center align-self-center modalFormClanskaKartica" th:if="${korisnik.clanskaKartica != null}" th:with="clanskaKarticaVar=${korisnik.clanskaKartica}">
+                        <label style="padding-left: 40px;">ID: <span th:text="${clanskaKarticaVar.clanskaKarticaId}"></span></label>
+
+                        <form action="#" th:action="@{admin/clanskaKartica/update}" th:object="${clanskaKarticaVar}" method="POST">
+                            <div class="form-group">
+                                <label for="brojBodova">Broj Bodova:</label>
+                                <input type="number" name="brojBodova" th:value="${clanskaKarticaVar.brojBodova}"  id="brojBodova" placeholder="Broj bodova na kartici" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="datumIzdavanja">Datum Izdavanja:</label>
+                                <input type="date" name="datumIzdavanja" th:value="${clanskaKarticaVar.datumIzdavanja}"  id="datumIzdavanja" placeholder="Datum izdavanja" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="datumIsteka">Datum Isteka:</label>
+                                <input type="date" name="datumIsteka" th:value="${clanskaKarticaVar.datumIsteka}"  id="datumIsteka" placeholder="Datum isteka" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="status">Status:</label>
+                                <input type="text" name="status" th:value="${clanskaKarticaVar.status}"  id="status" placeholder="Status kartice" required> <!-TO-DO: Napraviti da bude select dropdown ili radio button -->
+                            </div>
+
+
+
+                            <!--Prenos preostalih polja za objekat clanskeKartice -->
+                            <input type="hidden" name="clanskaKarticaId" th:value="${clanskaKarticaVar.clanskaKarticaId}">
+
+
+                            <input type="submit" class="btn btn-warning" value="Izvrši izmene" name="btnIzvrsiIzmene">
+
+                        </form>
+                    </div>
+                </div>
+            </div><!--modal-body end-->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Otkaži</button>
+            </div>
+
+        </div>
+    </div>
+</div><!-- modal end-->
+
+</body>
+</html>

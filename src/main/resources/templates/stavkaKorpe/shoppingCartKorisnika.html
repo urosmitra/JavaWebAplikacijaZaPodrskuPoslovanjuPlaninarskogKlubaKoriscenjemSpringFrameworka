@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <title>Planinarski klub "Summit Explorers"</title>
+
+    <!-- Bootstrap 4.5 CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <!-- reference CSS file -->
+    <link rel="stylesheet" th:href="@{/css/myStyle.css}">
+
+    <!--Font Awesome ikonice!-->
+    <link th:href="@{/fontAwesome/all.css}" rel="stylesheet"> <!--load all styles -->
+
+</head>
+<body class="bodyKorisnikBackground">
+
+<!-- Top Bar -->
+<div th:replace="fragments/topBar :: topBar1(brojTelefonaKluba=${klub.brojTelefona}, emailKluba=${klub.email})"></div>
+<!-- kraj Top Bara -->
+
+<!-- Navigation bar fragment -->
+<div th:replace="fragments/navBar :: navBar1"></div>
+<!-- Navigation bar fragment END-->
+
+<div class="container" style="background-color: #fff;">
+    <div class="col-12" style="height: 2rem;">
+
+    </div>
+
+    <div class="col-12 text-center" style="margin-bottom: 1.8rem;">
+        <h2>Vaša Korpa Proizvoda</h2>
+    </div>
+
+    <div class="row mb-3" style="min-height: 20rem;">
+        <th:block th:if="${listaStavkiKorpeKorisnika != null and !listaStavkiKorpeKorisnika.isEmpty()}">
+            <div class="col-sm-7 ml-2 mr-4"> <!-- Kolona za PRIKAZ STAVKI KORPE -->
+
+                <!--POVRATNA PORUKA O UNAVAILABLE PROIZVODA KORPE -->
+                <th:block th:if="${listaStavkiUnavailable}">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <span>Nažalost, <span class="font-weight-bolder">jedan ili više proizvoda u vašoj korpi nije više dostupan da se poruči u željenoj količini</span> ili ga trenutno nema na stanju. Da biste mogli da  izvršite porudžbinu <b>morate izbaciti takve proizvod/e iz korpe</b>. Proverite stanje na stranici o detaljima proizvoda ili nas kontaktirajte za više informacija.
+                            <br/><b>Nedostupni proizvodi u korpi:</b>
+                            <ul>
+                                <li th:each="stavka : ${listaStavkiUnavailable}">[[${stavka.proizvod.naziv}]]</li>
+                            </ul>
+                        </span>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </th:block>
+                <!--KRAJ POVRATNE PORUKA O UNAVAILABLE PROIZVODA KORPE -->
+
+                <!--POVRATNA PORUKE O BRISANJE STAVKE KORPE -->
+                <th:block th:if="${stavkaKorpeObrisana}">
+                    <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                        <span><i class="fas fa-check font-weight-bolder" style="font-size: 19px;"></i> Uspešno ste izbacili proizvod iz korpe. (Naziv proizvoda: <b>[[${proizvodObrisaneKorpe.naziv}]]</b>)</span>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </th:block>
+                <!--KRAJ POVRATNE PORUKE O BRISANJU STAVKE KORPE -->
+
+
+                <th:block th:each="stavkaKorpe, status : ${listaStavkiKorpeKorisnika}">
+                    <div class="row border rounded mb-3 pt-2 pb-2" th:with="proizvod = ${stavkaKorpe.proizvod}">
+
+                        <div class="col-1" style="font-size: 17px;">
+                            <div class="mb-2">[[${status.count}]].</div>
+                            <div>
+                                <a th:href="@{/korisnik/stavkaKorpe/delete(stavkaKorpeId=${stavkaKorpe.stavkaKorpeId})}"
+                                th:data-nazivProizvoda="${proizvod.naziv}"
+                                onclick="return confirm('Da li ste sigurni da želite da izbacite proizvod iz korpe? (' + this.getAttribute('data-nazivProizvoda') + ')')">
+                                    <span style="color: red;">
+                                        <i class="deleteIconImg fas fa-trash-alt fa-lg"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <img th:src="@{${proizvod.getThumbnailPhotoPath()}}" class="img-fluid">
+                        </div>
+                        <div class="col-7">
+                            <div class="mb-2">
+                                <a th:href="@{/prodavnica/proizvod(proizvodId=${proizvod.proizvodId})}">
+                                    <b>[[${proizvod.naziv}]]</b>
+                                </a>
+                            </div>
+                            <div>
+                                <span>Količina: <b>[[${stavkaKorpe.izabranaKolicina}]]</b></span>
+                            </div>
+
+
+                            <!-- Cena Proizvoda i popust ako ima -->
+                            <div class="d-flex justify-content-start col-md-12 mb-3 mt-3 p-0">
+                                <div><span style="font-size: 15px;" class="mr-2">Jedinična cena:</span> </div>
+                                <th:block th:if="${proizvod.popust != 0}">
+                                    <div style="position: relative; margin-right: 0.8rem;">
+                                        <span class="font-weight-bolder d-block pl-2 pr-2" style="background-color: #e4ce21;">[[${proizvod.cena}]]&#8364;</span>
+                                        <i class="fa fa-slash redSlash3"></i>
+                                    </div>
+                                </th:block>
+                                <th:block th:if="${proizvod.popust == 0}">
+                                    <span class="font-weight-bolder d-block pl-2 pr-2" style="background-color: #e4ce21;">[[${proizvod.cena}]]&#8364;</span>
+                                </th:block>
+                                <th:block th:if="${proizvod.popust != 0}">
+                                    <div th:with="cenaSaPopustom = ${@proizvodServiceImpl.getCenaProizvodaSaPopustom(proizvod)}">
+                                        <span class="font-weight-bolder d-block pl-2 pr-2" style="background-color: #1fcb36;">[[${cenaSaPopustom}]]&#8364;</span>
+                                    </div>
+                                </th:block>
+                            </div>
+                            <!-- KRAJ Cena Proizvoda i popust ako ima -->
+
+                            <div th:with="ukupnaCenaStavkeKorpe = ${@stavkaKorpeServiceImpl.izracunajUkupnuCenuStavkeKorpe(stavkaKorpe)}">
+                                Ukupna cena stavke: <span class="font-weight-bolder" style="font-size: 18px;">[[${ukupnaCenaStavkeKorpe}]]&#8364;</span>
+                            </div>
+
+                        </div>
+                    </div>
+                </th:block>
+
+
+            </div><!-- KRAJ kolone za prikaz stavki korpe -->
+
+            <div class="col-sm-4 mb-4" th:with="totalCenaKorpe = ${@stavkaKorpeServiceImpl.izracunajTotalCenuKorpe(listaStavkiKorpeKorisnika)}">
+                <div>
+                    <span class="h3">Ukupna Cena:</span>
+                </div>
+                <div class="mb-3">
+                    <span class="h2">[[${totalCenaKorpe}]]&#8364;</span>
+                </div>
+
+                <div class="mb-3">
+                    <a class="btn btn-warning" id="btnIdiNaPorudzbinu" style="font-size: 18px;" th:href="@{/korisnik/checkout}">Idi Na Porudžbinu</a>
+                </div>
+
+                <!--/* Ukoliko je korisnik ostvario pravo na nagradni popust pomocu bodova sa clanske kartice  */-->
+                <th:block th:if="${clanskaKarticaKorisnika != null}">
+                        <th:block th:if="${@clanskaKarticaServiceImpl.isActive(clanskaKarticaKorisnika)}">
+                            <div th:with="listaDiscountNagrada = ${@clanskaKarticaDiscountServiceImpl.findAllAvailableDiscountPackages(clanskaKarticaKorisnika.brojBodova)}">
+                                <th:block th:if="${listaDiscountNagrada != null and !listaDiscountNagrada.isEmpty()}">
+                                    <p class="lead">Broj bodova na kartici: <span class="font-weight-bold">[[${clanskaKarticaKorisnika.brojBodova}]]</span></p>
+                                    <p class="lead">Ostvarili ste pravo na popust prilikom sledeće kupovine!</p>
+                                    <p class="lead">Ukoliko želite sada da iskoristite nagradni popust izaberite neku od sledećih opcija:</p>
+
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="radioDiscountPackage" id="radioDiscountPackage" value="" checked>
+                                        <label class="form-check-label" for="radioDiscountPackage">
+                                            Bez Dodatnog Popusta
+                                        </label>
+                                    </div>
+                                    <div class="form-check" th:each="nagradaDiscount, nagradaStatus : ${listaDiscountNagrada}">
+                                        <input class="form-check-input" type="radio" name="radioDiscountPackage" th:id="${'radioDiscountPackage' + nagradaStatus.count}" th:value="${nagradaDiscount.clanskaKartDiscountId}">
+                                        <label class="form-check-label" th:id="${'radioDiscountPackage' + nagradaStatus.count}">
+                                            [[${nagradaDiscount.opis}]] (Vrednost: <span class="font-weight-bolder" th:text="${nagradaDiscount.vrednostBodovi}"></span>)
+                                        </label>
+                                    </div>
+                                </th:block>
+                            </div>
+                        </th:block>
+                </th:block>
+
+            </div>
+        </th:block>
+
+        <th:block th:if="${listaStavkiKorpeKorisnika == null or listaStavkiKorpeKorisnika.isEmpty()}">
+            <h4 class="px-3">Trenutno nemate nijedan proizvod u korpi.</h4>
+        </th:block>
+
+    </div>
+
+
+</div>
+
+<div class="container px-0">
+    <!--/* Footer fragment */-->
+    <div th:replace="fragments/footer :: footer2(brojTelefonaKluba=${klub.brojTelefona}, emailKluba=${klub.email})"></div>
+    <!--/* Footer fragment END */-->
+</div>
+<!-- Script Source Files -->
+
+<!-- jQuery -->
+<script th:src="@{/js/jquery-3.5.1.min.js}"></script>
+<!-- Popper JS -->
+<script th:src="@{/js/popper.min.js}"></script>
+<!-- Bootstrap 4.5 JS -->
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<!-- Font Awesome -->
+<script th:src="@{/js/all.js}"></script>
+
+<script>
+    $(document).ready(function (){
+        $("#btnIdiNaPorudzbinu").on('click', function (){
+            let radioDiscountSelected = document.querySelector('input[name="radioDiscountPackage"]:checked').value;
+
+            if(radioDiscountSelected.length > 0){
+                let _href = $(this).attr("href");
+                $(this).attr('href', _href + '?radioDiscountPackage=' + radioDiscountSelected);
+            }
+
+        });
+    })
+</script>
+
+</body>
+</html>

@@ -1,0 +1,273 @@
+/*------------------------LOGIN PAGE STYLING---------------------*/
+.main-login-section {
+    margin: 0 auto;
+    margin-top: 130px;
+    padding: 0;
+}
+
+.modal-login-content{
+    background-color: #434e5a; /*mozda promenimo*/
+    opacity: .8; /*transparentnost modal login-a*/
+    padding: 0 18px;
+    border-radius: 10px;
+}
+
+.user-login-img img {
+    height: 120px;
+    width: 120px;
+}
+
+.user-login-img {
+    margin-top: -60px;
+    margin-bottom: 45px;
+}
+
+.form-login-group{
+    margin-bottom: 25px;
+}
+
+.form-login-group input {
+    height: 42px;
+    border-radius: 5px;
+    border: 0;
+    font-size: 18px;
+    letter-spacing: 2px;
+    padding-left: 54px; /*to make space for icons*/
+}
+.form-login-group::before {
+    font-family: 'Font Awesome 5 Free';
+    content: '\f1fa';
+    font-weight: 900;
+    /*sva tri property-ja iznad moraju da se dodaju da bi se ikonica prikazala na ekranu
+    (za solid ikonice je font-weight 900, a za regular 400)*/
+    position: absolute;
+    font-size: 22px;
+    left: 28px;
+    padding-top: 4px;
+    color: #555e60;
+}
+
+.form-login-group:last-of-type::before{ /*password lock icon*/
+    content: "\f023";
+}
+
+
+.form-login-input button {
+    width: 40%;
+    margin: 5px 0 25px; /*5 top, 25 bottom*/
+}
+
+#btnLogin {
+    background-color: #1c6288;
+    font-size: 19px;
+    border-radius: 5px;
+    padding: 7px 14px;
+    border: 1px solid #daf1ff;
+}
+
+#btnLogin:hover {
+    background-color: #13445e;
+    border: 1px solid #daf1ff;
+}
+.forgot {
+    padding: 5px 0 25px;
+}
+
+.forgot a {
+    color: #daf1ff;
+}
+
+.login-alert {
+    position: relative;
+    height: 30px;
+    width: 220px;
+}
+.btnLoginMessage {
+    position:absolute;
+    top: 2px;
+}
+
+/*------------------------LOGIN PAGE STYLING END---------------------*/
+
+
+.modalFormClanskaKartica label {
+    width: 100%;
+    display: inline-block;
+    text-align: left;
+    font-weight: bold;
+}
+
+.modalFormClanskaKartica .form-group label{
+    width: 200px;
+    display: inline-block;
+    text-align: left;
+}
+
+.errorMsg {
+    color: red;
+}
+.fieldError {
+    border: 2px solid red;
+}
+
+
+/* Navigation bar styling */
+
+.navbar {
+    font-size: 1.15rem;
+    font-weight: 600;
+    box-shadow: 0 .5rem .5rem rgba(0,0,0,.1);
+    z-index: 1;
+}
+
+.navbar form button{
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+.nav-link.active, .nav-link:hover {
+    color: #5e9543!important;
+}
+
+
+/* Navigation bar styling END */
+
+.deleteIconImg:hover{
+    color: #9c3232;
+}
+
+.img-thumbnailAranzman {
+    height: 150px;
+}
+
+.top-bar{
+    background: #54ba3d;
+    height: 2.8rem;
+    padding: .5rem 0;
+}
+
+.top-bar a{
+    color: white;
+    text-decoration: none;
+    font-size: 1.1rem;
+}
+
+.top-bar .dropdown a{
+    color: white;
+    text-decoration: none;
+    font-size: 1.1rem;
+}
+
+.homeSliderImg{
+    border-radius: 15px;
+}
+
+.bodyKorisnikBackground{
+    background-image: url("/slikeOstalo/backgroundKorisnik.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-color: #cbe0c1;
+}
+
+
+#sectionPredstojecaPutovanja .card:nth-child(n+6){
+    display: none;
+}
+
+#showMoreBtn{
+    padding: 15px;
+    margin: 30px 0;
+    background-color: #54ba3d;
+    border: 1px solid #fff;
+    color: #fff;
+    transition: all 0.5s ease;
+}
+
+#showMoreBtn:hover{
+    transition: all 0.5s ease;
+    border: 1px solid darkgreen;
+    box-shadow: 0 0 15px 5px rgba(53, 175, 124, 1);
+}
+
+#sectionPredstojecaPutovanja .card:hover {
+    border: 1px solid #246e06;
+}
+
+.bottomLine{
+    border-bottom: 2px solid #28a745;
+}
+
+.bottomLineWhite{
+    border-bottom: 1px solid #f5bf0f;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+}
+
+.redSlash{
+    position: absolute;
+    left: 6px;
+    bottom: 9%;
+    font-size: 21px;
+    color: red;
+}
+.redSlash2{
+    position: absolute;
+    left: -1px;
+    bottom: 11%;
+    font-size: 22px;
+    color: red;
+}
+.nazivProizvodaFrontPage {
+    height: 100px;
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+.redSlash3{ /* za prodavnicu front page */
+    position: absolute;
+    left: 3px;
+    bottom: 8%;
+    font-size: 23px;
+    color: red;
+}
+
+.linkTextProdavnicaProizvod, .linkTextProdavnicaProizvod:hover, .linkFooter, .linkFooter:hover{
+    text-decoration: none;
+    color: inherit;
+}
+
+.redSlash4{
+    position: absolute;
+    left: 5px;
+    bottom: 10%;
+    font-size: 26px;
+    color: red;
+}
+
+.slikaProizvodDonjiSlajder{
+    max-width: 100%;
+    max-height: 100%;
+}
+
+
+#listaSvihProizvodaSection .d-flex .card:nth-child(n+9){
+    display: none;
+}
+
+
+#proizvodiVrsteProizvodaSection .d-flex .card:nth-child(n+9){
+    display: none;
+}
+
+/* Footer */
+
+.copyright1{
+    padding-top: 7px;
+}
+.footer-copyright{
+    color: white;
+    background-color: #22262a;
+}
+
+

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <title>Planinarski klub "Summit Explorers"</title>
+
+    <!-- Bootstrap 4.5 CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <!-- reference CSS file -->
+    <link rel="stylesheet" th:href="@{/css/myStyle.css}">
+
+
+    <!--Font Awesome ikonice!-->
+    <link th:href="@{/fontAwesome/all.css}" rel="stylesheet"> <!--load all styles -->
+
+    <style>
+        body {
+            background-image: url("/slikeOstalo/LoginFormBackground1.jpg");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-color: #cbe0c1;
+        }
+    </style>
+
+</head>
+<body>
+
+    <div class="modal-dialog text-center">
+        <div class="col-sm-9 main-login-section">
+            <div class="modal-content modal-login-content">
+
+                <div class="col-12 user-login-img">
+                    <img th:src="@{/slikeOstalo/faceLoginForm.png}" alt="">
+                </div>
+
+                <!-- poruka za invalid credentials-->
+                <div class="col-12">
+                    <div th:if="${param.error}" class="alert alert-danger login-alert" role="alert">
+                        <div class="btnLoginMessage">
+                            <i>Neispravan email ili šifra!</i>
+                        </div>
+                    </div>
+                </div>
+                <!--kraj poruke za invalid credentials-->
+
+                <th:block th:if="${param.logout}">
+                    <div class="col-12">
+                        <div class="alert alert-success login-alert" role="alert">
+                            <div class="btnLoginMessage">
+                                <i>Uspešno ste se odjavili.</i>
+                            </div>
+                        </div>
+                    </div>
+                </th:block>
+
+
+                <div class="col-12 form-login-input">
+                    <form th:action="@{/autentifikujUsera}" method="POST">
+                        <div class="form-group form-login-group">
+                            <input type="email" name="username" class="form-control" placeholder="Unesite email" required>
+                        </div>
+
+                        <div class="form-group form-login-group">
+                            <input type="password" name="password" class="form-control" placeholder="Unesite password" required>
+                        </div>
+
+
+                        <button type="submit" class="btn btn-success" id="btnLogin">Login</button>
+
+                    </form>
+                </div>
+
+                <div class="col-12 forgot">
+                    <a th:href="@{/index}">Idi na Početnu</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+<!-- Script Source Files -->
+
+<!-- jQuery -->
+<script th:src="@{/js/jquery-3.5.1.min.js}"></script>
+<!-- Popper JS -->
+<script th:src="@{/js/popper.min.js}"></script>
+<!-- Bootstrap 4.5 JS -->
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<!-- Font Awesome -->
+<script th:src="@{/js/all.js}"></script>
+
+</body>
+</html>

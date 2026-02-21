@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <title>Planinarski klub "Summit Explorers"</title>
+
+    <!-- Bootstrap 4.5 CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+
+    <!-- reference CSS file -->
+    <link rel="stylesheet" th:href="@{/css/myStyle.css}">
+
+
+
+    <!--load all styles -->
+    <!--Font Awesome ikonice!-->
+    <link th:href="@{/fontAwesome/all.css}" rel="stylesheet">
+
+</head>
+<body class="bodyKorisnikBackground">
+
+<!-- Top Bar -->
+<div th:replace="fragments/topBar :: topBar1(brojTelefonaKluba=${klub.brojTelefona}, emailKluba=${klub.email})"></div>
+<!-- kraj Top Bara -->
+
+<!-- Navigation bar fragment -->
+<div th:replace="fragments/navBar :: navBar1"></div>
+<!-- Navigation bar fragment END-->
+
+<div class="container">
+
+    <div class="card">
+        <div class="card-body">
+            <div class="col-md-9 mt-4 mb-5">
+                <h3>Potvrda Rezervacije</h3>
+
+                <p class="lead">Uspešno ste rezervisali putovanje: [[${rezervacijaKorisnika.putovanje.aranzman.naziv}]].</p>
+                <p>ID vaše rezervacije je <span class="font-weight-bold">[[${rezervacijaKorisnika.rezervacijaId}]]</span>, Napravljena datuma <span th:text="${#temporals.format(rezervacijaKorisnika.datumVremeRez, 'EEEE, dd.MM.yyyy.') + ' u ' + #temporals.format(rezervacijaKorisnika.datumVremeRez, 'HH:mm:ss')}"></span></p>
+                <p>Plaćanje vršite u prostorijama kluba ili preko žiro računa: <span class="font-weight-bolder">250-1250000015150-04</span>. Potrebno je da <span class="font-weight-bold">celokupan iznos</span> uplatite <span class="font-weight-bold">do 7 dana pred polazak na put.</span></p>
+                <p>U slučaju <span class="font-weight-bolder">otkazivanja putovanja</span>, obevestićemo Vas minimum 5 dana unapred, u kom slučaju Vam vraćamo celokupan iznos uplaćenog novca.</p>
+                <p>Da vidite pregled svih vaših rezervacija, kliknite <a th:href="@{/korisnik/pregledRezervacija}" class="card-link">ovde</a>.</p>
+                <p class="lead">Za dodatne informacije ili bilo kakva pitanja kontaktirajte nas putem telefona: <span class="font-weight-bolder">[[${klub.brojTelefona}]]</span> ili na email: <span class="font-weight-bolder">[[${klub.email}]]</span></p>
+            </div>
+            <!-- Poslednji paragraf neka bude za link ka pregledu svojih rezervacija -->
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Script Source Files -->
+
+<!-- jQuery -->
+<script th:src="@{/js/jquery-3.5.1.min.js}"></script>
+<!-- Popper JS -->
+<script th:src="@{/js/popper.min.js}"></script>
+<!-- Bootstrap 4.5 JS -->
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<!-- Font Awesome -->
+<script th:src="@{/js/all.js}"></script>
+</body>
+</html>

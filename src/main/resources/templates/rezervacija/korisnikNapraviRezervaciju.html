@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <title>Planinarski klub "Summit Explorers"</title>
+
+    <!-- Bootstrap 4.5 CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+
+    <!-- reference CSS file -->
+    <link rel="stylesheet" th:href="@{/css/myStyle.css}">
+
+
+
+    <!--load all styles -->
+    <!--Font Awesome ikonice!-->
+    <link th:href="@{/fontAwesome/all.css}" rel="stylesheet">
+
+</head>
+<body class="bodyKorisnikBackground">
+
+<!-- Top Bar -->
+<div th:replace="fragments/topBar :: topBar1(brojTelefonaKluba=${klub.brojTelefona}, emailKluba=${klub.email})"></div>
+<!-- kraj Top Bara -->
+
+<!-- Navigation bar fragment -->
+<div th:replace="fragments/navBar :: navBar1"></div>
+<!-- Navigation bar fragment END-->
+
+
+<div class="container">
+
+    <!-- Mozemo da napravimo formu sa svim hidden fields-ima i samo kad korisnik klikne na dugme rezervisi da se prosledi nova rezervacija -->
+    <!--Ova stranica je samo za proveru podataka o putovanju i aranzmanu -->
+    <div class="card"> <!--CONTENT CARD-->
+        <div class="card-body pl-4 pr-5 text-center">
+            <div class="col-md-12 mt-4 mb-5">
+                <h3>Rezervacija Putovanja</h3>
+            </div>
+
+            <div class="col-md-12">
+                <h4>Podaci o Putovanju</h4>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 d-flex justify-content-center">
+                    <table class="table table-borderless w-75 text-left">
+                        <tbody>
+                            <tr>
+                                <th>Putovanje ID</th>
+                                <td>[[${putovanje.putovanjeId}]]</td>
+                            </tr>
+                            <tr>
+                                <th>Datum i Vreme Polaska</th>
+                                <td th:text="${#temporals.format(putovanje.datumVremePolaska, 'dd.MM.yyyy.') + ' u ' + #temporals.format(putovanje.datumVremePolaska, 'HH:mm')}"></td>
+                            </tr>
+                            <tr>
+                                <th>Datum Povratka</th>
+                                <td th:text="${#temporals.format(putovanje.datumPovratka, 'dd.MM.yyyy.')}"></td>
+                            </tr>
+
+                            <tr>
+                                <th>Trajanje</th>
+                                <td>[[${aranzman.trajanjeDani}]] dana</td>
+                            </tr>
+
+                            <tr>
+                                <th>Cena putovanja</th>
+                                <td>
+                                    <span th:text="${@putovanjeServiceImpl.cenaPutovanjaAranzmana(aranzman.cena, putovanje.popust)} + ' &#8364;'"></span>
+                                    <th:block th:if="${putovanje.popust != null and putovanje.popust != 0}">
+                                        <span> (Popust od <span class="font-weight-bold">[[${putovanje.popust}]]%</span>)</span>
+                                    </th:block>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Naziv Aranžmana</th>
+                                <td>[[${aranzman.naziv}]]</td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                    <div class="col-md-6 d-flex justify-content-center">
+                        <table>
+                            <tbody class="table table-borderless w-75 text-left">
+                                <tr>
+                                    <th>Prevoz</th>
+                                    <td>[[${aranzman.prevoz}]]</td>
+                                </tr>
+                                <tr>
+                                    <th>Zahtevnost</th>
+                                    <td><span style="font-size: 20px;" class="font-weight-bold">[[${aranzman.zahtevnost}]]</span>/5</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Vrsta Putovanja</th>
+                                    <td th:text="${aranzman.vrstaPutovanja.naziv}"></td>
+                                </tr>
+                                <tr>
+                                    <th>MIN Broj Putnika</th>
+                                    <td th:text="${aranzman.minPutnika}"></td>
+                                </tr>
+                                <tr>
+                                    <th>MAX Broj Putnika</th>
+                                    <td th:text="${aranzman.maxPutnika}"></td>
+                                </tr>
+                                <tr>
+                                    <th>Status Putovanja</th>
+                                    <th:block th:if="${putovanje.status.name == 'NEPOTVRDJENO'}">
+                                        <td><span class="font-weight-bolder" style="color: red;">[[${putovanje.status}]]</span>
+                                            <span style="font-size: 12px;">*Još se nije dovoljan broj putnika prijavilo da bi se putovanje održalo, pratite promenu statusa ili nas kontaktirajte za više informacija</span>
+                                        </td>
+                                    </th:block>
+                                    <th:block th:if="${putovanje.status.name != 'NEPOTVRDJENO'}">
+                                        <td style="color: green;" th:text="${putovanje.status}"></td>
+                                    </th:block>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+                    </div>
+
+            </div>
+
+            <div class="row justify-content-center mt-3">
+                <form action="#" th:action="@{/korisnik/rezervacija/addNew}" th:object="${novaRezervacija}" method="POST" th:with="cenaPutovanja1 = ${@rezervacijaPutovanjeServiceImpl.izracunajCenuPutovanja(putovanje.popust, aranzman.cena)}">
+                    <!--HIDDEN POLJA PRENOS ZA REZERVACIJU -->
+                    <input type="hidden" th:field="*{rezervacijaId}">
+<!--                    <input type="hidden" name="datumVremeRez" th:value="${#temporals.format(#temporals.createNow(),'yyyy-MM-dd HH:mm')}">-->
+                    <input type="hidden" th:field="*{korisnik}">
+                    <input type="hidden" th:field="*{putovanje}">
+                    <input type="hidden" name="status" th:value="AKTIVNA">
+                    <input type="hidden" name="cenaPutovanja" th:value="${cenaPutovanja1}">
+                    <input type="submit" class="btn btn-success mr-2" value="Rezerviši Putovanje" name="btnNovaRez">
+                    <a class="btn btn-outline-secondary" th:href="@{'/pregledAranzmana/' + ${aranzman.aranzmanId}}">Otkaži</a>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!--/* Footer fragment */-->
+    <div th:replace="fragments/footer :: footer2(brojTelefonaKluba=${klub.brojTelefona}, emailKluba=${klub.email})"></div>
+    <!--/* Footer fragment END */-->
+
+</div>
+
+
+
+<!-- Script Source Files -->
+
+<!-- jQuery -->
+<script th:src="@{/js/jquery-3.5.1.min.js}"></script>
+<!-- Popper JS -->
+<script th:src="@{/js/popper.min.js}"></script>
+<!-- Bootstrap 4.5 JS -->
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<!-- Font Awesome -->
+<script th:src="@{/js/all.js}"></script>
+</body>
+</html>

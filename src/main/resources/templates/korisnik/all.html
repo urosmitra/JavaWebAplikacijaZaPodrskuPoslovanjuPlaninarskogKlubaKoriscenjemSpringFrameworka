@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <title>Planinarski klub "Summit Explorers"</title>
+
+    <!-- Bootstrap 4.5 CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <!-- reference CSS file -->
+    <link rel="stylesheet" th:href="@{/css/myStyle.css}">
+
+    <!--Font Awesome ikonice!-->
+    <link th:href="@{/fontAwesome/all.css}" rel="stylesheet">
+    <!--load all styles -->
+</head>
+<body>
+
+<!-- Navigation bar fragment -->
+<div th:replace="fragments/navBar :: navBar1"></div>
+<!-- Navigation bar fragment END-->
+
+
+<div class="container" style="min-height: 30rem;">
+    <div class="row ml-0 mt-2 mb-3">
+        <h1>Lista Korisnika</h1>
+    </div>
+
+    <!--POVRATNE PORUKE -->
+    <div class="alert alert-warning alert-dismissible fade show" role="alert" th:if="${failMessage}">
+        <span th:text="${failMessage}"></span>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <th:block th:if="${porukaEditSuccess}">
+        <div class="alert alert-success alert-dismissible fade show col-md-7 mb-2" role="alert">
+            <span class="font-weight-bolder">[[${porukaEditSuccess}]] (ID: [[${izmenjenKorisnik.korisnikId}]], email: [[${izmenjenKorisnik.email}]])</span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </th:block>
+
+    <th:block th:if="${messageSuccessObrisan}">
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${messageSuccessObrisan}"></span>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    </th:block>
+    <!--KRAJ POVRATNIH PORUKA -->
+
+    <!--/* KEYWORD pretraga */-->
+    <div class="row mb-3 align-items-center">
+        <div class="col-md-4">
+            <form action="#" th:action="@{/admin/listaKorisnika}" method="GET" class="d-flex mr-2">
+                <div class="col-md-11 d-inline-block pl-0">
+                    <input type="text" id="txtSearch" name="keyword" th:value="${keyword}" class="form-control" placeholder="Unesite ime, prezime ili email korisnika">
+                </div>
+                <button type="submit" class="btn btn-outline-success"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+        <div class="col-md-2">
+            <a th:href="@{/admin/listaKorisnika}" class="btn btn-link">Reset Pretragu</a>
+        </div>
+    </div>
+    <!--/* KRAJ KEYWORD pretrage */-->
+
+    <!-- Main deo -->
+    <th:block th:if="${listaKorisnika==null or listaKorisnika.isEmpty()}">
+        <h3 th:if="${keyword}">Nije pronađen nijedan korisnik u bazi sa tom ukucanom ključnom reči.</h3>
+        <h3 th:if="${keyword == null}">Nema korisnika u bazi!</h3>
+    </th:block>
+    <div th:if="${listaKorisnika != null && !listaKorisnika.isEmpty()}">
+
+
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Korisnik ID</th>
+                    <th>Ime</th>
+                    <th>Prezime</th>
+                    <th>Email</th>
+                    <th>Broj Telefona</th>
+                    <th>Članska Kartica</th>
+                    <th>Akcije</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="korisnik : ${listaKorisnika}">
+                    <td th:text="${korisnik.korisnikId}"></td>
+                    <td th:text="${korisnik.ime}"></td>
+                    <td th:text="${korisnik.prezime}"></td>
+                    <td th:text="${korisnik.email}"></td>
+                    <td th:text="${korisnik.brojTelefona}"></td>
+                    <td th:if="${korisnik.clanskaKartica != null}">
+<!--                        <a type="button" data-toggle="modal" th:attrappend="data-target=${korisnik.korisnikId}"  class="btn btn-link pl-0" th:href="@{'/clanskaKarticaKorisnika/' + ${korisnik.clanskaKartica.clanskaKarticaId}}" th:text="'Pregled podataka na kartici (ID: ' + ${korisnik.clanskaKartica.clanskaKarticaId} + ')'"></a> -->
+                        <a type="button" th:href="@{'/admin/clanskaKartica/edit/' + ${korisnik.clanskaKartica.clanskaKarticaId}}" class="btn btn-link pl-0" th:text="'Pregled podataka na kartici (ID: ' + ${korisnik.clanskaKartica.clanskaKarticaId} + ')'" ></a>
+                    </td>
+                    <td th:if="${korisnik.clanskaKartica == null}" th:text="NEMA"></td>
+                    <td>
+                        <!--/* <a th:href="@{'/admin/korisnik/edit/' + ${korisnik.korisnikId}}" class="btn btn-warning btn-sm">Izmeni</a> */-->
+                        <th:block th:if="${korisnik.korisnikId == #authentication.getPrincipal().korisnikId}">
+                            <!--/* TO-DO: PROVERITI DA LI EDIT FORMA ADMINOVA PROVERAVA JEDINSTVENOST EMAIL-A, AKO NE ONDA DA UBACIMO */-->
+                            <a th:href="@{'/admin/korisnik/edit/' + ${korisnik.korisnikId}}" class="btn btn-warning btn-sm">Izmeni</a>
+                        </th:block>
+                        <a th:href="@{'/admin/korisnik/delete/' + ${korisnik.korisnikId}}" class="btn btn-danger btn-sm"
+                           th:data-korisnikId="${korisnik.getKorisnikId()}"
+                           th:data-korEmail="${korisnik.getEmail()}"
+                           onclick="return confirm('Da li ste sigurni da želite da obrišete korisnika (ID:' + this.getAttribute('data-korisnikId') + ', Email: ' + this.getAttribute('data-korEmail') +') ?');">Obriši</a>
+                    </td>
+
+                   <!-- th:onclick="${'return confirm(' + '''Da li ste sigurni da zelite da obrisete korisnika (ID: ' + korisnik.getKorisnikId() + ', Email:' + korisnik.getEmail() + ') ?'');'}" -->
+
+
+
+
+                </tr>
+
+            </tbody>
+        </table>
+
+
+    </div>
+
+<!-- TO DO: NAPRAVITI U JAVASCRIPTU DA ZA KORISNIKE KOJI SU ADMINI BUTTONI ZA EDIT I DELETE BUDU DISABLED, MOZDA SAMO EDIT DA BUDE DOSTUPAN ZA TRENUTNOG ADMINA!!! -->
+
+
+</div>
+
+<!--/* Footer fragment */-->
+<div class="container">
+    <div th:replace="fragments/footer :: footer1"></div>
+</div>
+<!--/* Footer fragment END */-->
+
+
+
+
+<!-- Script Source Files -->
+
+<!-- jQuery -->
+<script th:src="@{/js/jquery-3.5.1.min.js}"></script>
+<!-- Popper JS -->
+<script th:src="@{/js/popper.min.js}"></script>
+<!-- Bootstrap 4.5 JS -->
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<!-- Font Awesome -->
+<script th:src="@{/js/all.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+    let user = [[${#authentication.getPrincipal().korisnikId}]];
+    console.log(user);
+    let glavniAdmin = [[${glavniAdmin}]];
+    let dugmeObrisiGlavnogAdmina = document.querySelector("a[data-korisnikId='" + glavniAdmin.korisnikId +"']");
+    dugmeObrisiGlavnogAdmina.classList.add('disabled');
+    dugmeObrisiGlavnogAdmina.setAttribute('aria-disabled', 'true');
+    dugmeObrisiGlavnogAdmina.setAttribute('tabindex', '-1');
+</script>
+</body>
+</html>

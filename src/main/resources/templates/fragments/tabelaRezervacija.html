@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http//www.thymeleaf.org/extras/spring-security" lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div th:fragment="tabelaRezervacija1(putovanje, listaRezervacija, samoPregled)" align="center">
+    <th:block th:if="${putovanje.status.name != 'OTKAZANO'}">
+        <p class="lead mb-1">Datumi putovanja: <span style="font-weight: bold;">[[${#temporals.format(putovanje.datumVremePolaska, 'dd.MM.yyyy.')}]]</span> - <span style="font-weight: bold;">[[${#temporals.format(putovanje.datumPovratka, 'dd.MM.yyyy.')}]]</span></p>
+    </th:block>
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+        <tr>
+            <th>Rezervacija ID</th>
+            <th>Korisnik ID</th>
+            <th>Email korisnika</th>
+            <th>Ime i Prezime</th>
+            <th>Datum i Vreme Rezervacije</th>
+            <th>Cena</th>
+            <th>Status</th>
+            <th:block th:if="${samoPregled == 'NE'}">
+                <th>Akcije</th>
+            </th:block>
+
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="rezervacija : ${listaRezervacija}">
+            <td th:text="${rezervacija.rezervacijaId}"></td>
+            <td th:text="${rezervacija.korisnik.korisnikId}"></td>
+            <td th:text="${rezervacija.korisnik.email}"></td>
+            <td>[[${rezervacija.korisnik.ime}]] [[${rezervacija.korisnik.prezime}]]</td>
+            <td th:text="${#temporals.format(rezervacija.datumVremeRez, 'dd.MM.yyyy. HH:mm')}"></td>
+            <td class="font-weight-bolder">[[${rezervacija.cenaPutovanja}]]&#8364;</td>
+            <td th:text="${rezervacija.status}"></td>
+
+            <th:block th:if="${samoPregled == 'NE'}">
+            <td> <!--Akcije za rezervaciju (Edit i Delete) -->
+                <a th:href="@{/admin/rezervacija/delete(rezervacijaId=${rezervacija.rezervacijaId}, putovanjeId=${putovanje.putovanjeId})}" class="btn btn-danger btn-sm"
+                th:data-rezervacijaId="${rezervacija.rezervacijaId}"
+                th:data-korisnikId="${rezervacija.korisnik.korisnikId}"
+                th:data-korisnikEmail="${rezervacija.korisnik.email}"
+                onclick="return confirm('Da li ste sigurni da želite da obrišete rezervaciju putovanja za korisnika? (Rezervacija ID: ' + this.getAttribute('data-rezervacijaId') + ', Korisnik ID: ' +
+                 this.getAttribute('data-korisnikId') +', Email Kor: ' + this.getAttribute('data-korisnikEmail') + ')')">Obriši</a>
+            </td>
+            </th:block>
+
+        </tr>
+        </tbody>
+    </table>
+</div><!--Kraj fragmenta tabelaRezervacija1 -->
+
+
+<div th:fragment="tabelaRezervacijaKorisnika(listaRezervacija, samoPregled)" align="center">
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+        <tr>
+            <th>Rezervacija ID</th>
+            <th>Datum i Vreme Rez</th>
+            <th>Status Rez</th>
+            <th>Naziv Putovanja</th> <!--ovo ce sadrzati link ka stranici za pregled aranzmana -->
+            <th>Polazak</th>
+            <th>Povratak</th>
+            <th>Trajanje</th>
+            <th>Cena</th>
+            <th>Status Putovanja</th>
+            <th:block th:if="${samoPregled == 'NE'}">
+            <th>Akcije</th> <!--OTKAZI REZERVACIJU -->
+            </th:block>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="rezervacija : ${listaRezervacija}">
+            <td>[[${rezervacija.rezervacijaId}]]</td>
+            <td th:text="${#temporals.format(rezervacija.datumVremeRez, 'dd.MM.yyyy. HH:mm:ss')}"></td>
+            <td th:text="${rezervacija.status.name}"></td>
+            <td> <!--Naziv putovanja aranzmana -->
+                <a th:href="@{'/pregledAranzmana/' +  ${rezervacija.putovanje.aranzman.aranzmanId}}" class="btn btn-link"><i class="fas fa-link"></i> [[${rezervacija.putovanje.aranzman.naziv}]] (KLIKNI ZA PREGLED ARANZMANA)</a>
+            </td>
+            <td th:text="${#temporals.format(rezervacija.putovanje.datumVremePolaska, 'dd.MM.yyyy. HH:mm')}"></td>
+            <td th:text="${#temporals.format(rezervacija.putovanje.datumPovratka, 'dd.MM.yyyy.')}"></td>
+            <td>[[${rezervacija.putovanje.aranzman.trajanjeDani}]] dana</td>
+
+            <td th:with="cenaAranzmana = ${@putovanjeServiceImpl.cenaPutovanjaAranzmana(rezervacija.putovanje.aranzman.cena, rezervacija.putovanje.popust)}">
+                [[${cenaAranzmana}]] &#8364;
+            </td>
+            <td>[[${rezervacija.putovanje.status.name}]]</td>
+            <th:block th:if="${samoPregled == 'NE'}">
+                <td><!--Akcije za rezervaciju Korisnika (samo DELETE) -->
+                    <a th:href="@{/korisnik/deleteReservation(rezervacijaId=${rezervacija.rezervacijaId})}" class="btn btn-danger btn-sm"
+                       th:data-rezervacijaId="${rezervacija.rezervacijaId}"
+                       th:data-nazivAranzmana="${rezervacija.putovanje.aranzman.naziv}"
+                       onclick="return confirm('Da li ste sigurni da želite da otkažete rezervaciju za putovanje? (Rezervacija ID: ' + this.getAttribute('data-rezervacijaId') +', Naziv aranžmana: ' +
+                       this.getAttribute('data-nazivAranzmana') + ') ***Ova akcija je bespovratna, što znači da ćete morati da ponovo rezervišete putovanje ukoliko to želite')">Otkaži Rezervaciju</a>
+                </td>
+            </th:block>
+
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+
+
+</body>
+</html>

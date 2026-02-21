@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http//www.thymeleaf.org/extras/spring-security" lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<section th:fragment="prikazProizvodaFrontPage1(listaProizvoda)" id="prikazProizvodaFrontSection">
+    <th:block th:if="${listaProizvoda != null and !listaProizvoda.isEmpty()}">
+        <div class="d-flex justify-content-start">
+            <div th:each="proizvod : ${listaProizvoda}" class="card d-inline-block mr-2 mb-3" style="width: 18rem;"> <!-- PROIZVOD Card -->
+                <a th:href="@{/prodavnica/proizvod(proizvodId=${proizvod.proizvodId})}">
+                    <img class="card-img-top" style="height: 250px;" th:src="@{${proizvod.getThumbnailPhotoPath()}}" th:alt="${'Slika proizvoda: ' + proizvod.naziv}">
+                </a>
+                <div class="card-body text-center">
+                    <div class="row">
+
+                        <!-- Cena Proizvoda i popust ako ima -->
+                        <div class="d-flex justify-content-center col-md-12 mb-3 mt-3">
+                            <th:block th:if="${proizvod.popust != 0}">
+                                <div style="position: relative; margin-right: 0.8rem;">
+                                    <span class="font-weight-bolder d-block pl-2 pr-2" style="background-color: #e4ce21;" th:text="${proizvod.cena + '&#8364;'}"></span>
+                                    <i class="fa fa-slash redSlash3"></i>
+                                </div>
+                            </th:block>
+                            <th:block th:if="${proizvod.popust == 0}">
+                                <span class="font-weight-bolder d-block pl-2 pr-2" style="background-color: #e4ce21;">[[${proizvod.cena}]]&#8364;</span>
+                            </th:block>
+                            <th:block th:if="${proizvod.popust != 0}">
+                                <div th:with="cenaSaPopustom = ${@proizvodServiceImpl.getCenaProizvodaSaPopustom(proizvod)}">
+                                    <span class="font-weight-bolder d-block pl-2 pr-2" style="background-color: #1fcb36;">[[${cenaSaPopustom}]] &#8364;</span>
+                                </div>
+                            </th:block>
+                        </div>
+                        <!-- KRAJ Cena Proizvoda i popust ako ima -->
+
+                        <a th:href="@{/prodavnica/proizvod(proizvodId=${proizvod.proizvodId})}" class="text-decoration-none linkTextProdavnicaProizvod">
+                            <div class="card-title col-md-12 pl-2 pr-2 nazivProizvodaFrontPage">[[${proizvod.naziv}]]</div>
+                        </a>
+
+                    </div>
+                </div><!--KRAJ card-body div-a -->
+            </div><!-- KRAJ PROIZVOD CARD-A -->
+        </div>
+    </th:block>
+</section>
+
+</body>
+</html>
